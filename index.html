@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>f1r3lang — The Concurrent Language for Verifiable Concurrent Computing</title>
+  <meta name="description" content="f1r3lang (formerly Rholang) is a concurrent programming language built on the rho-calculus. SELECT-FROM-WHERE, plus the missing word: DO. Parallel by default, transactions that leave receipts, AI-native by design.">
+  <meta name="theme-color" content="#0A0A0A">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="f1r3lang — Concurrent, Verifiable, AI-Native">
+  <meta property="og:description" content="The language formerly known as Rholang. Concurrency as the default, capability security by construction, AI as a primitive.">
+
+  <!-- Google Fonts: Josefin Sans + Source Sans 3 + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600;700&family=Source+Sans+3:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap">
+
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- deploy:begin (finalize.py — do not hand-edit) -->
+  <link rel="canonical" href="https://f1r3lang.ai/">
+  <link rel="icon" href="/images/f1r3lang-logo-v1.svg" type="image/svg+xml">
+  <meta property="og:url" content="https://f1r3lang.ai/">
+  <meta property="og:site_name" content="f1r3lang">
+  <meta property="og:type" content="website">
+  <!-- deploy:end -->
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<!-- ============ NAVIGATION ============ -->
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <img src="images/f1r3lang-logo-v1.svg" alt="f1r3lang">
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">&#9776;</button>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="index.html" aria-current="page">Home</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="language.html">The Language</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="get-started.html">Get Started</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="research.html">Research</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="ecosystem.html">Ecosystem</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="https://github.com/F1R3FLY-io" target="_blank" rel="noopener">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <h1 class="hero-headline">What is f1r3lang?</h1>
+  <p class="hero-tagline">The concurrent language for verifiable concurrent&nbsp;computing.</p>
+  <p class="hero-copy">You already know the door in: SELECT, FROM, WHERE — the query shape every developer has written for fifty years. f1r3lang builds the whole language around it and adds the missing word: <strong>DO</strong>. The query acts. Built on the rho&#8209;calculus, every program is processes passing messages on channels — parallel by default, deterministic in consensus, and every transaction leaves its receipt in the program itself.</p>
+  <p class="hero-lineage">Heir to Rholang &middot; proven on RChain &middot; built by F1R3FLY</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="get-started.html">Get started</a>
+    <a class="btn btn-ghost" href="language.html">See the language</a>
+  </div>
+
+  <div class="code-block reveal">
+    <div class="code-block-bar"><span>select-from-where-do.rho</span><span>f1r3lang</span></div>
+    <pre><span class="cm">-- the query you already write:</span>
+<span class="cm">-- SELECT spec FROM prey WHERE chi(spec)</span>
+
+<span class="cm">// the same query in f1r3lang — with a DO</span>
+<span class="kw">for</span>( @spec &lt;- prey <span class="kw">where</span> Chi(spec) ) {
+  Break!(spec)
+}</pre>
+  </div>
+</header>
+
+<!-- ============ PILLARS ============ -->
+<section class="section reveal" id="why">
+  <p class="eyebrow">Why f1r3lang</p>
+  <h2 class="section-header">A different starting point</h2>
+  <hr class="section-rule">
+  <div class="card-grid">
+    <article class="card">
+      <h3>The door you already know</h3>
+      <p>SELECT&#8209;FROM&#8209;WHERE has been reinvented every decade for fifty years — SQL, LINQ, XQuery, comprehensions. f1r3lang builds the language around that shape and adds DO: the query is not a request for a value someone else acts on. It is how anything happens at all.</p>
+    </article>
+    <article class="card">
+      <h3>Transactions leave receipts</h3>
+      <p>When a reader meets a writer on a channel, the meeting itself is recorded in the program text. Atomicity needs no engine underneath, multi-party commit is the <code class="inline">&amp;</code> operator, and a failed condition consumes nothing — there is no rollback because nothing began.</p>
+    </article>
+    <article class="card">
+      <h3>Concurrent and unforgeable</h3>
+      <p>The <code class="inline">|</code> operator runs processes in parallel by default, and names made with <code class="inline">new</code> are cryptographically unforgeable — capability security as grammar. Thousands of concurrent transactions, identical final state on every node.</p>
+    </article>
+    <article class="card">
+      <h3>One text, three readings</h3>
+      <p>Let a condition answer with a value instead of yes or no, and the same program becomes three artefacts: code committing transactions, a stochastic simulation of a population of itself, and — measured, not promised — a learning rule. <a href="research.html">The research &rarr;</a></p>
+    </article>
+  </div>
+</section>
+
+<!-- ============ THE NAME ============ -->
+<section class="section reveal" id="name">
+  <p class="eyebrow">The name</p>
+  <h2 class="section-header">The name is the language</h2>
+  <hr class="section-rule">
+  <div class="prose">
+    <p>The two glyphs in the middle of <strong>f1r3<span style="color:var(--accent-2);">|@</span>ng</strong> are not decoration. <code class="inline">|</code> is parallel composition — the operator that runs processes concurrently. <code class="inline">@</code> is quotation — the operator that turns a process into a name. They are the two operators everything else in the language is assembled from. The name spells the calculus.</p>
+  </div>
+</section>
+
+<!-- ============ AI FEATURE ============ -->
+<section class="section reveal" id="ai">
+  <p class="eyebrow">The headline act</p>
+  <h2 class="section-header">Smart contracts that think</h2>
+  <hr class="section-rule">
+  <div class="split">
+    <div class="prose">
+      <p>No other chain language ships AI as a built-in. In f1r3lang, a contract can query a model mid-execution, hand the result to the next process, and leave a verifiable record of the whole exchange on chain.</p>
+      <p>AI channels are non-deterministic by nature, so the runtime caches responses at execution and replays them during consensus — agents that act on chain without breaking the chain's agreement about what happened.</p>
+      <p>And calling models is only the surface. Grade a <code class="inline">where</code> clause and the clause itself becomes a learning rule — gradient descent falls out of the language, no framework imported. <a href="research.html">See the research.</a></p>
+      <p><strong>On-chain agents, off-chain models, one verifiable transcript.</strong></p>
+    </div>
+    <div class="code-block" style="margin-top:0;">
+      <div class="code-block-bar"><span>ask-the-model.rho</span><span>f1r3lang</span></div>
+      <pre><span class="kw">new</span> gpt4(<span class="str">`rho:ai:gpt4`</span>) <span class="kw">in</span> {
+  <span class="kw">new</span> ret <span class="kw">in</span> {
+    gpt4!(<span class="str">"Explain quantum computing
+           in one sentence"</span>, *ret) |
+    <span class="kw">for</span> (@response &lt;- ret) {
+      stdout!(response)
+    }
+  }
+}
+
+<span class="cm">// also built in:</span>
+<span class="cm">// rho:ai:dalle3, rho:ai:textToAudio</span>
+<span class="cm">// rho:ollama:chat — local models,</span>
+<span class="cm">// no API key leaves your node</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LINEAGE ============ -->
+<section class="section reveal" id="lineage">
+  <p class="eyebrow">Lineage</p>
+  <h2 class="section-header">A decade of theory, shipping</h2>
+  <hr class="section-rule">
+  <div class="prose">
+    <p>f1r3lang is the heir to Rholang — the concurrent smart contract language that ran RChain's mainnet. It inherits the core of its control flow from rholang, and the debt is named where it is owed: in f1r3lang's own module system, rholang appears as one theory among others, written out in the same declarations a developer would use for an invoice format. The calculus underneath is not privileged. That is the point.</p>
+    <p>But the inheritance is not an equivalence. f1r3lang was carried through the research notes as "rholang 1.4" before earning its own name, and what it adds — a data definition sublanguage with a real module system, and conditions that can answer with a value instead of a verdict — changes what a program can mean. A pure-Rust engine, an active research program published as working notes with runnable code, and a language that goes where rholang does not reach.</p>
+  </div>
+  <div class="hero-actions">
+    <a class="btn btn-ghost" href="language.html">What changed &rarr;</a>
+    <a class="btn btn-ghost" href="research.html">Where it's going &rarr;</a>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="section cta-band reveal" id="start">
+  <p class="eyebrow">Ten minutes to hello world</p>
+  <h2 class="section-header">Run it tonight</h2>
+  <hr class="section-rule">
+  <div class="prose">
+    <p>One Docker command starts a node. The REPL takes it from there.</p>
+  </div>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="get-started.html">Get started</a>
+    <a class="btn btn-ghost" href="https://github.com/F1R3FLY-io/f1r3fly" target="_blank" rel="noopener">Read the docs on GitHub</a>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <img src="images/f1r3lang-logo-v1.svg" alt="">
+      <span class="footer-note">A <a href="https://f1r3fly.io" target="_blank" rel="noopener">F1R3FLY</a> language</span>
+    </div>
+    <span class="footer-copy">&copy; F1R3FLY INDUSTRIES, 2026. All Rights Reserved</span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get Started — f1r3lang</title>
+  <meta name="description" content="Run a F1R3FLY node with Docker, open the REPL, and write your first f1r3lang contract in minutes.">
+  <meta name="theme-color" content="#0A0A0A">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600;700&family=Source+Sans+3:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap">
+
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- deploy:begin (finalize.py — do not hand-edit) -->
+  <link rel="canonical" href="https://f1r3lang.ai/get-started.html">
+  <link rel="icon" href="/images/f1r3lang-logo-v1.svg" type="image/svg+xml">
+  <meta property="og:url" content="https://f1r3lang.ai/get-started.html">
+  <meta property="og:site_name" content="f1r3lang">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Get Started">
+  <meta property="og:description" content="Run a F1R3FLY node with Docker, open the REPL, and write your first f1r3lang contract in minutes.">
+  <!-- deploy:end -->
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <img src="images/f1r3lang-logo-v1.svg" alt="f1r3lang">
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">&#9776;</button>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="index.html">Home</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="language.html">The Language</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="get-started.html" aria-current="page">Get Started</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="research.html">Research</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="ecosystem.html">Ecosystem</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="https://github.com/F1R3FLY-io" target="_blank" rel="noopener">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="main">
+
+<header class="page-head">
+  <p class="eyebrow">Get started</p>
+  <h1 class="section-header">From zero to hello world</h1>
+  <hr class="section-rule">
+</header>
+
+<section class="section reveal" style="border-top:none; padding-top:2.5rem;">
+  <div class="prose">
+    <p>The fastest path is Docker: one command pulls the production Rust node. From there you have a REPL, an evaluator, and a full local chain to deploy against.</p>
+  </div>
+
+  <div class="steps">
+
+    <div class="step" data-step="1">
+      <h3>Run a node</h3>
+      <div class="code-block" style="margin-top:0.5rem;">
+        <div class="code-block-bar"><span>terminal</span><span>docker</span></div>
+        <pre><span class="cm"># pull the latest Rust node</span>
+docker pull f1r3flyindustries/f1r3fly-rust-node:latest
+
+<span class="cm"># start a standalone node for development</span>
+docker compose -f docker/standalone.yml up</pre>
+      </div>
+      <p class="card-note" style="max-width:var(--measure);">Compose files live in the <a href="https://github.com/F1R3FLY-io/f1r3fly" target="_blank" rel="noopener">f1r3fly repo</a>. A multi-validator network for testing consensus is one file away: <code class="inline">docker/shard.yml</code>.</p>
+    </div>
+
+    <div class="step" data-step="2">
+      <h3>Write a contract</h3>
+      <div class="code-block" style="margin-top:0.5rem;">
+        <div class="code-block-bar"><span>hello.rho</span><span>f1r3lang</span></div>
+        <pre><span class="kw">new</span> helloworld, stdout(<span class="str">`rho:io:stdout`</span>) <span class="kw">in</span> {
+  <span class="kw">contract</span> helloworld( world ) = {
+    <span class="kw">for</span>( @msg &lt;- world ) {
+      stdout!(msg)
+    }
+  } |
+  helloworld!(<span class="str">"Hello, World!"</span>)
+}</pre>
+      </div>
+      <p class="card-note" style="max-width:var(--measure);">A <code class="inline">contract</code> is a persistent receive: it stays alive and answers every message sent to its channel. This one echoes whatever it's sent.</p>
+    </div>
+
+    <div class="step" data-step="3">
+      <h3>Evaluate it</h3>
+      <div class="code-block" style="margin-top:0.5rem;">
+        <div class="code-block-bar"><span>terminal</span><span>rnode</span></div>
+        <pre><span class="cm"># run a contract against your node</span>
+rnode eval hello.rho
+
+<span class="cm"># or explore interactively</span>
+rnode repl</pre>
+      </div>
+      <p class="card-note" style="max-width:var(--measure);">The interpreter also runs standalone — no chain required — for learning and testing language semantics.</p>
+    </div>
+
+    <div class="step" data-step="4">
+      <h3>Go deeper</h3>
+      <p style="max-width:var(--measure);">The full developer reference lives in the repo — nineteen chapters from syntax to deployed applications, verified against the production implementation.</p>
+      <ul class="link-list" style="max-width:var(--measure);">
+        <li><a href="https://github.com/F1R3FLY-io/f1r3fly/blob/main/docs/rholang/01-language-overview.md" target="_blank" rel="noopener">Language overview</a> <span class="link-desc">— the core model in ten minutes</span></li>
+        <li><a href="https://github.com/F1R3FLY-io/f1r3fly/blob/main/docs/rholang/08-channels-and-concurrency.md" target="_blank" rel="noopener">Channels &amp; concurrency</a> <span class="link-desc">— send, receive, join, peek</span></li>
+        <li><a href="https://github.com/F1R3FLY-io/f1r3fly/blob/main/docs/rholang/09-contracts-and-state.md" target="_blank" rel="noopener">Contracts &amp; state</a> <span class="link-desc">— patterns, mutable cells, CRUD</span></li>
+        <li><a href="https://github.com/F1R3FLY-io/f1r3fly/blob/main/docs/rholang/10-system-channels.md" target="_blank" rel="noopener">System channels</a> <span class="link-desc">— I/O, crypto, registry, vaults, AI</span></li>
+        <li><a href="https://github.com/F1R3FLY-io/f1r3fly/blob/main/docs/rholang/README.md" target="_blank" rel="noopener">The full reference</a> <span class="link-desc">— all nineteen chapters + examples</span></li>
+        <li><a href="https://github.com/F1R3FLY-io/f1r3node-rust" target="_blank" rel="noopener">Runnable guard &amp; metering examples</a> <span class="link-desc">— small, compiled, covered by tests; change the guard and watch what does and doesn't get consumed</span></li>
+        <li><a href="developers.html">f1r3lang for the Working Software Developer</a> <span class="link-desc">— the full developer note, readable on this site</span></li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<section class="section cta-band reveal">
+  <h2 class="section-header">Stuck? Ask.</h2>
+  <hr class="section-rule">
+  <div class="hero-actions" style="margin-top:0;">
+    <a class="btn btn-primary" href="https://discord.gg/NN59aFdAHM" target="_blank" rel="noopener">Join the Discord</a>
+    <a class="btn btn-ghost" href="ecosystem.html">Explore the ecosystem</a>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <img src="images/f1r3lang-logo-v1.svg" alt="">
+      <span class="footer-note">A <a href="https://f1r3fly.io" target="_blank" rel="noopener">F1R3FLY</a> language</span>
+    </div>
+    <span class="footer-copy">&copy; F1R3FLY INDUSTRIES, 2026. All Rights Reserved</span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

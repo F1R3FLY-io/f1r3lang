@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research — f1r3lang</title>
+  <meta name="description" content="The research program behind f1r3lang: language definitions with equations and rewrites, conditions generated rather than designed, and graded where-clauses that turn one program into a simulation and a learning rule.">
+  <meta name="theme-color" content="#0A0A0A">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600;700&family=Source+Sans+3:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap">
+
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- deploy:begin (finalize.py — do not hand-edit) -->
+  <link rel="canonical" href="https://f1r3lang.ai/research.html">
+  <link rel="icon" href="/images/f1r3lang-logo-v1.svg" type="image/svg+xml">
+  <meta property="og:url" content="https://f1r3lang.ai/research.html">
+  <meta property="og:site_name" content="f1r3lang">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Research">
+  <meta property="og:description" content="The research program behind f1r3lang: language definitions with equations and rewrites, conditions generated rather than designed, and graded where-clauses that turn one program into a simulation and a learning rule.">
+  <!-- deploy:end -->
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <img src="images/f1r3lang-logo-v1.svg" alt="f1r3lang">
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">&#9776;</button>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="index.html">Home</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="language.html">The Language</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="get-started.html">Get Started</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="research.html" aria-current="page">Research</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="ecosystem.html">Ecosystem</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="https://github.com/F1R3FLY-io" target="_blank" rel="noopener">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="main">
+
+<header class="page-head">
+  <p class="eyebrow">Research</p>
+  <h1 class="section-header">Where the WHERE&nbsp;goes</h1>
+  <hr class="section-rule">
+</header>
+
+<!-- ============ INTRO ============ -->
+<section class="section reveal" id="intro" style="border-top:none; padding-top:2.5rem;">
+  <div class="prose">
+    <p>f1r3lang is a shipped language with an active research program behind it, published as working notes with runnable code. The program is one idea widened twice: the comprehension has a <code class="inline">where</code> clause, and that slot turns out to hold far more than anyone asked of it in 1974. First — where do the pattern and the condition come from? Second — what happens when the condition stops answering yes or no?</p>
+  </div>
+</section>
+
+<!-- ============ THE LADDER ============ -->
+<section class="section reveal" id="ladder">
+  <div class="split" style="margin-top:0;">
+    <div class="prose">
+      <h2 class="section-sub">Languages all the way down</h2>
+      <p>A condition like <code class="inline">Chi(spec)</code> is a claim about structure, so there must be a notion of what structure a specimen has. In SQL that comes from the schema. In f1r3lang it comes from a <strong>language definition</strong> — and it is a great deal more than a schema.</p>
+      <p>A <code class="inline">Theory</code> declaration has four rungs. The first names the grammar: what terms exist. The second adds <strong>equations</strong> — the invariants every codebase currently maintains by hand, in comments the type system cannot read: <em>this is a list, but order doesn't matter; compare this string case-insensitively.</em> Pattern matching then happens up to those equations, so nobody ever writes a normalisation function or hits the bug where two spellings of one value meet. The third rung adds <strong>rewrites</strong> — rules that make the data move on its own. The slogan is: <em>the data can wiggle.</em></p>
+      <p>The fourth rung makes a definition a <strong>module</strong>: a theory takes other theories as parameters, renames what it inherits, and combines with its siblings over a shared ancestor rather than beside one — so parallel composition is "commutative monoid, carrier renamed," and associativity arrives with the parameter instead of being restated. Sharing is a claim the compiler holds you to: two theories that arrived by different routes are two things, and if they share a name, that is a diagnostic rather than a silent override. Definitions live in <code class="inline">Module</code> declarations and import by <em>address</em>, not path — a language definition published on chain has an address, and importing it is the same act whether it came from the next directory or another party's node.</p>
+      <p>From one declaration, the toolchain generates the parser, the printer, substitution, and the rewrite engine. And the connection back to the language is one sentence: <strong>a channel's type is a language definition.</strong> Sending on a channel means sending a term of that language — two agents can exchange programs in a domain-specific language built for the purpose, and the recipient knows exactly what it received.</p>
+    </div>
+    <div>
+      <div class="compare-wrap">
+      <table class="compare">
+        <thead><tr><th scope="col">Rungs populated</th><th scope="col">The familiar name</th></tr></thead>
+        <tbody>
+          <tr><td>types + terms</td><td>algebraic data types — what a schema can already say</td></tr>
+          <tr><td>+ equations</td><td>the invariants your type system cannot read, made machine-checkable</td></tr>
+          <tr><td>+ rewrites</td><td>domain-specific languages — data with its own dynamics</td></tr>
+          <tr><td>+ parameters</td><td>modules, in the sense of ML functors — theories built from other theories</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="card-note" style="margin-top:1.4rem; max-width:48ch;">The rho&#8209;calculus itself — the theory f1r3lang runs on — is expressible as one such definition among others, in the same block a developer would use for an invoice format. The calculus is not privileged. That is the point.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GENERATED CONDITIONS ============ -->
+<section class="section reveal" id="conditions">
+  <p class="eyebrow">Widening one</p>
+  <h2 class="section-header">Conditions are generated, not designed</h2>
+  <hr class="section-rule">
+  <div class="prose">
+    <p>The vocabulary available in a <code class="inline">where</code> clause is not a fixed list of built-in predicates. It is <strong>constructed from the language definition</strong> that types the channel. Change the definition, and the condition language changes with it, automatically. Every other system ships the predicates its designers anticipated, and the escape hatch — a user-defined function — is opaque to everything. Generated conditions have no escape hatch because they have no fixed list to escape from.</p>
+    <p>Three kinds of sight come out, at three prices. <strong>Structural</strong> conditions ask what a term looks like — including conditions on <em>namespaces</em>, whole regions of the address space, because names are quoted terms and a condition can descend into them. <strong>Behavioural</strong> conditions ask about the future: does this specimen, if poked, <em>do</em> a certain thing — one step of this rule is possible here, and afterwards such-and-such holds. And the choice of <strong>container</strong> for the evidence is a dial: sets give ordinary Boolean logic ("does this hold?"), linear containers give resource logic ("is there <em>exactly one</em> of these, to be consumed once?"), and coalition containers ask about populations ("is there a group of these that, together, can bring something about?") — quorum questions, asked without running a protocol.</p>
+    <p>Measured on a working example, the cheap rungs of that ladder delivered 92% of the total gain for a third of the total cost — structural sight is the bargain, behavioural sight is the luxury, and the right position on the dial is an economic fact about the deployment environment, not a matter of rigour.</p>
+  </div>
+</section>
+
+<!-- ============ GRADED ============ -->
+<section class="section reveal" id="graded">
+  <p class="eyebrow">Widening two</p>
+  <h2 class="section-header">When yes or no isn't the answer</h2>
+  <hr class="section-rule">
+  <div class="split" style="margin-top:0;">
+    <div class="prose">
+      <p>A guard returns a truth value, and the communication fires or does not. That is one choice, not the only one. Let the condition return a <em>value</em> — a probability, a rate, a cost — and read it as <em>how much</em> this candidate happens rather than <em>whether</em>.</p>
+      <p>The reassurance first: when the values are plain Booleans, nothing changes. No existing program acquires a new meaning. A developer who never grades a condition never encounters any of this.</p>
+      <p>A developer who does gets the same program text as three artefacts. Over Booleans it is what it always was: code committing transactions. Over rates it becomes a <strong>stochastic simulation of a population of itself</strong> — running it many times gives the distribution of outcomes, which is how you ask "if this contract is deployed a thousand times against that environment, what happens?" in the language the system is written in, with no separate model to drift. And in the measured example — a forager with a finite budget, deciding whether to open specimens — the graded clause <em>is</em> the learning rule: the belief update turns out to be a correctly conditioned, unconditionally stable gradient step. Machine learning fell out; none was imported.</p>
+      <p>The graded readings run in a separate simulator, off the consensus path, by design. And one honest fence: a restricted fragment admits a complex-valued, quantum-style reading — a real construction for circuit-shaped programs, not a claim that f1r3lang is a quantum language.</p>
+    </div>
+    <div class="compare-wrap">
+      <table class="compare">
+        <thead><tr><th scope="col">Values in the clause</th><th scope="col">Running the program means</th></tr></thead>
+        <tbody>
+          <tr><td>Booleans</td><td>executing, exactly as today</td></tr>
+          <tr><td>non-negative reals</td><td>a stochastic simulation of a population</td></tr>
+          <tr><td>graded beliefs (PLN)</td><td>probabilistic inference driving execution</td></tr>
+          <tr><td>best-explanation (Viterbi)</td><td>finding the most likely path</td></tr>
+          <tr><td>costs (tropical)</td><td>finding the cheapest path</td></tr>
+          <tr><td>complex amplitudes</td><td>a quantum-style simulation, on a fenced fragment</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STATUS ============ -->
+<section class="section reveal" id="status">
+  <p class="eyebrow">Honesty about status</p>
+  <h2 class="section-header">What actually runs</h2>
+  <hr class="section-rule">
+  <div class="prose">
+    <p>Nothing here silently pretends that a plan is a product. Three words a reader has every right to keep apart: <em>specified</em> means the surface is frozen and written down; <em>implemented</em> means there is code a reader can run; <em>planned</em> means neither yet.</p>
+  </div>
+  <div class="compare-wrap">
+  <table class="compare">
+    <thead><tr><th scope="col">Capability</th><th scope="col">Status</th></tr></thead>
+    <tbody>
+      <tr><td><code>Theory</code> declarations: types, terms, equations, rewrites; generated toolchain</td><td>Implemented — in the reference elaborator and the language-definition toolchain, with definitions shipped for the lambda calculus, the rho&#8209;calculus, and others.</td></tr>
+      <tr><td>The fourth rung: parameters, exports, replacements, the algebra of theories</td><td>Implemented as a dependency-free reference elaborator on a branch of the Rust node, with the universal-algebra tower and the rho&#8209;calculus as its worked corpus — plus a corpus of negative cases for the diagnostics.</td></tr>
+      <tr><td>The same surface in the live parser</td><td>Not yet — the grammar delta sits beside the elaborator as a patch, and the elaborator is not on the node's workspace build. The honest boundary of this section.</td></tr>
+      <tr><td><code>Module</code>, and imports by address</td><td>Specified and implemented in the elaborator; resolution is a compile-time step in the client toolchain, so a node never fetches anything.</td></tr>
+      <tr><td><code>where</code> guards + cost accounting</td><td>Implemented on a branch of the Rust node, with a transpiler, runnable examples, and compile tests — including a worked supply-chain demonstration with conserved money and inventory.</td></tr>
+      <tr><td>Conditions from the generated logic</td><td>Planned. The guard slot exists and is evaluated before commit, but a condition today is an ordinary boolean expression; connecting an elaborated theory to the guard is what would close the gap.</td></tr>
+      <tr><td>Graded conditions &amp; simulation</td><td>Implemented as a separate simulator crate — stochastic and quantum readings built and tested — deliberately not part of the node's execution path.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ READING ============ -->
+<section class="section reveal" id="reading">
+  <p class="eyebrow">Go deeper</p>
+  <h2 class="section-header">The working notes</h2>
+  <hr class="section-rule">
+  <div class="prose">
+    <p>The research is published as a series of working notes by L.G. Meredith. The developer-facing entrance is <a href="developers.html"><em>f1r3lang for the Working Software Developer</em></a> — readable right here; the theory-first entrance is <em>Graph-Structured Lambda Theories</em>. Neither is a prerequisite for the other. Several earlier notes predate the name and speak of internal code names or "rholang 1.4" — they are the same language.</p>
+  </div>
+  <ul class="link-list" style="max-width:var(--measure);">
+    <li><a href="developers.html">f1r3lang for the Working Software Developer</a> <span class="link-desc">— the full note, converted for the web: the door, the Theory declaration, both widenings, and what actually runs</span></li>
+    <li><a href="https://github.com/F1R3FLY-io/publications" target="_blank" rel="noopener">F1R3FLY-io/publications</a> <span class="link-desc">— the working notes: generated logics, graded where-clauses, learning as cost-accounted computation</span></li>
+    <li><a href="https://github.com/F1R3FLY-io/mettail-rust" target="_blank" rel="noopener">F1R3FLY-io/mettail-rust</a> <span class="link-desc">— the language-definition toolchain</span></li>
+    <li><a href="https://github.com/F1R3FLY-io/f1r3node-rust" target="_blank" rel="noopener">F1R3FLY-io/f1r3node-rust</a> <span class="link-desc">— guards, match guards, and the cost-accounting transpiler, with runnable examples</span></li>
+  </ul>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="section cta-band reveal">
+  <h2 class="section-header">Start at the shallow end</h2>
+  <hr class="section-rule">
+  <div class="hero-actions" style="margin-top:0;">
+    <a class="btn btn-primary" href="get-started.html">Get started</a>
+    <a class="btn btn-ghost" href="language.html">The language &rarr;</a>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <img src="images/f1r3lang-logo-v1.svg" alt="">
+      <span class="footer-note">A <a href="https://f1r3fly.io" target="_blank" rel="noopener">F1R3FLY</a> language</span>
+    </div>
+    <span class="footer-copy">&copy; F1R3FLY INDUSTRIES, 2026. All Rights Reserved</span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

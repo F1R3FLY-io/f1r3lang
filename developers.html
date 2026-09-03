@@ -1,0 +1,2566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>f1r3lang for the Working Software Developer</title>
+  <meta name="description" content="The full developer note: from SELECT-FROM-WHERE to SELECT-FROM-WHERE-DO, and what happens when the WHERE stops answering yes or no. By L.G. Meredith, F1R3FLY.io.">
+  <meta name="theme-color" content="#0A0A0A">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600;700&family=Source+Sans+3:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- deploy:begin (finalize.py — do not hand-edit) -->
+  <link rel="canonical" href="https://f1r3lang.ai/developers.html">
+  <link rel="icon" href="/images/f1r3lang-logo-v1.svg" type="image/svg+xml">
+  <meta property="og:url" content="https://f1r3lang.ai/developers.html">
+  <meta property="og:site_name" content="f1r3lang">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="f1r3lang for the Working Software Developer">
+  <meta property="og:description" content="The full developer note: from SELECT-FROM-WHERE to SELECT-FROM-WHERE-DO, and what happens when the WHERE stops answering yes or no. By L.G. Meredith, F1R3FLY.io.">
+  <!-- deploy:end -->
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <img src="images/f1r3lang-logo-v1.svg" alt="f1r3lang">
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">&#9776;</button>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="index.html">Home</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="language.html">The Language</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="get-started.html">Get Started</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="research.html" aria-current="page">Research</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="ecosystem.html">Ecosystem</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="https://github.com/F1R3FLY-io" target="_blank" rel="noopener">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="main">
+<article class="section paper">
+
+<header class="paper-head">
+  <p class="eyebrow">Working note &middot; August 2026</p>
+  <h1 class="paper-title"><span class="flang">f1r3<span class="fg">|@</span>ng</span> for the Working Software&nbsp;Developer</h1>
+  <p class="paper-subtitle">From <code>SELECT-FROM-WHERE</code> to <code>SELECT-FROM-WHERE-DO</code>, and what happens when the <code>WHERE</code> stops answering yes or no</p>
+  <p class="paper-byline">L.G. Meredith &middot; F1R3FLY.io &middot; <a href="https://github.com/F1R3FLY-io/publications/tree/main/MeTTaIL4WorkingDev" target="_blank" rel="noopener">PDF &amp; LaTeX source</a></p>
+  <hr class="section-rule">
+</header>
+
+<section class="paper-abstract">
+  <h2 class="abstract-head">Abstract</h2>
+  <p>Most treatments of a programming language begin with its data definition language and arrive at control flow later. This one goes the other way round, because the control flow language of <span class="flang">f1r3<span class="fg">|@</span>ng</span> has a door every working developer has already walked through: the query comprehension. <code>SELECT-FROM-WHERE</code> in SQL, <code>from-where-select</code> in LINQ, <code>for-let-where-return</code> in XQuery &mdash; one shape, everywhere, for forty years. LINQ exists because that shape was worth having inside a host language where a developer could finally say what to <em>do</em> with the result. <span class="flang">f1r3<span class="fg">|@</span>ng</span> goes the rest of the way and builds the language around the comprehension. Its receipt, <code>for( ptrn &lt;- chan where cond )P</code>, is <code>SELECT-FROM-WHERE-DO</code>; its dual, <code>chan!(Q)</code>, makes the write side just as explicit as the read side.</p>
+  <p>Making both sides explicit buys something a query language cannot have. A communication is a meeting between a named reader and a named writer, and the substitution performed by the communication rule is the <em>witness</em> that the meeting occurred &mdash; so a transaction is a fact about the program text rather than a service of the engine. That raises the question the second half of this note answers: where do the pattern and the condition come from? They come from <span class="flang">f1r3<span class="fg">|@</span>ng</span>&rsquo;s <code>Theory</code> declaration, a data definition language with four rungs &mdash; grammar, equations, rewrites, and parameters &mdash; whose third rung defines whole languages, whose data can wiggle, and whose fourth rung makes a language definition a <em>module</em>: a theory takes other theories as arguments, renames what it inherits, and combines with its siblings over a shared ancestor rather than beside one. That structure subsumes SingularityNET&rsquo;s MeTTa: MeTTa&rsquo;s rules are the rewrites and its atom spaces are the channels, but MeTTa has no equational layer and no notion of a witnessed transaction.</p>
+  <p>Two widenings follow. First, the condition language is not fixed: it is <em>generated</em> from the language definition, and the choice of container for witnesses &mdash; sets, quantales, join semi-lattices &mdash; turns a dial between Boolean, linear and coalition observation, giving a <code>where</code> clause different powers of sight. Second, the condition need not be crisp. Graded conditions take values in a resolution algebra, and at that point the same program text stops being a state transition inside a node and becomes a simulation of a population of programs &mdash; stochastic over the non-negative reals, quantum over the complex numbers. A developer moves between programming in the small and programming in the large without changing languages, and without maintaining a model separate from the system.</p>
+  <p>A single running example, a foraging learner drawn from the mortal scientist programme, carries the exposition from the first <code>SELECT</code> to the last simulation.</p>
+</section>
+
+<nav class="paper-toc" aria-label="Contents">
+  <h2 class="abstract-head">Contents</h2>
+<ul class="toc">
+<li class="toc-l1"><a href="#sec:preface"><span class="toc-num">1</span> 1 Before anything else</a></li>
+<li class="toc-l2"><a href="#who-this-is-for"><span class="toc-num">1.1</span> 1.1 Who this is for</a></li>
+<li class="toc-l2"><a href="#why-the-order-is-backwards"><span class="toc-num">1.2</span> 1.2 Why the order is backwards</a></li>
+<li class="toc-l2"><a href="#the-running-example"><span class="toc-num">1.3</span> 1.3 The running example</a></li>
+<li class="toc-l1"><a href="#sec:cfl"><span class="toc-num">2</span> 2 The control flow language</a></li>
+<li class="toc-l2"><a href="#the-forager-as-a-query"><span class="toc-num">2.1</span> 2.1 The forager, as a query</a></li>
+<li class="toc-l2"><a href="#what-linq-was-actually-for"><span class="toc-num">2.2</span> 2.2 What LINQ was actually for</a></li>
+<li class="toc-l2"><a href="#select-from-where-do"><span class="toc-num">2.3</span> 2.3
+SELECT-FROM-WHERE-DO</a></li>
+<li class="toc-l2"><a href="#the-other-half-the-write"><span class="toc-num">2.4</span> 2.4 The other half: the write</a></li>
+<li class="toc-l2"><a href="#sec:table"><span class="toc-num">2.5</span> 2.5 The translation table</a></li>
+<li class="toc-l2"><a href="#joins-groups-and-where-the-where-goes"><span class="toc-num">2.6</span> 2.6 Joins, groups, and where the
+where goes</a></li>
+<li class="toc-l2"><a href="#sec:transaction"><span class="toc-num">2.7</span> 2.7 The witnessed transaction</a></li>
+<li class="toc-l2"><a href="#the-forager-in-full"><span class="toc-num">2.8</span> 2.8 The forager, in full</a></li>
+<li class="toc-l1"><a href="#sec:ddl"><span class="toc-num">3</span> 3 Where the pattern and the
+condition come from</a></li>
+<li class="toc-l2"><a href="#a-theory-declaration-whole"><span class="toc-num">3.2</span> 3.2 A Theory
+declaration, whole</a></li>
+<li class="toc-l2"><a href="#sec:rungs"><span class="toc-num">3.3</span> 3.3 The four rungs</a></li>
+<li class="toc-l2"><a href="#sec:reuse"><span class="toc-num">3.6</span> 3.6 Rung four: a language
+definition takes parameters</a></li>
+<li class="toc-l2"><a href="#sec:module"><span class="toc-num">3.7</span> 3.7 The module declaration</a></li>
+<li class="toc-l2"><a href="#sec:sharing"><span class="toc-num">3.8</span> 3.8 What sharing means, and why the
+compiler argues about it</a></li>
+<li class="toc-l2"><a href="#sec:loadtest"><span class="toc-num">3.9</span> 3.9 The parameter as a contract:
+extending a theory you did not write</a></li>
+<li class="toc-l2"><a href="#sec:metta"><span class="toc-num">3.11</span> 3.11 MeTTa, and what this adds to
+it</a></li>
+<li class="toc-l2"><a href="#sec:cost"><span class="toc-num">3.12</span> 3.12 What an operation costs</a></li>
+<li class="toc-l2"><a href="#sec:status"><span class="toc-num">3.13</span> 3.13 What actually runs</a></li>
+<li class="toc-l1"><a href="#sec:logic"><span class="toc-num">4</span> 4 Widening one: what a condition
+can see</a></li>
+<li class="toc-l2"><a href="#the-collection-component-is-a-dial"><span class="toc-num">4.4</span> 4.4 The collection component is a
+dial</a></li>
+<li class="toc-l2"><a href="#what-the-dial-costs"><span class="toc-num">4.5</span> 4.5 What the dial costs</a></li>
+<li class="toc-l2"><a href="#the-foragers-ladder"><span class="toc-num">4.6</span> 4.6 The forager’s ladder</a></li>
+<li class="toc-l1"><a href="#sec:graded"><span class="toc-num">5</span> 5 Widening two: when the condition
+stops answering yes or no</a></li>
+<li class="toc-l2"><a href="#the-move"><span class="toc-num">5.1</span> 5.1 The move</a></li>
+<li class="toc-l2"><a href="#what-a-value-algebra-has-to-supply"><span class="toc-num">5.2</span> 5.2 What a value algebra has to
+supply</a></li>
+<li class="toc-l2"><a href="#the-guard-becomes-a-weight"><span class="toc-num">5.3</span> 5.3 The guard becomes a weight</a></li>
+<li class="toc-l2"><a href="#three-readings-of-one-program"><span class="toc-num">5.4</span> 5.4 Three readings of one
+program</a></li>
+<li class="toc-l2"><a href="#the-forager-graded"><span class="toc-num">5.6</span> 5.6 The forager, graded</a></li>
+<li class="toc-l2"><a href="#what-is-settled-and-what-is-not"><span class="toc-num">5.7</span> 5.7 What is settled and what is
+not</a></li>
+<li class="toc-l1"><a href="#sec:close"><span class="toc-num">6</span> 6 Where this leaves a
+developer</a></li>
+<li class="toc-l2"><a href="#the-through-line-in-one-page"><span class="toc-num">6.1</span> 6.1 The through-line in one
+page</a></li>
+<li class="toc-l2"><a href="#what-to-do-on-monday"><span class="toc-num">6.2</span> 6.2 What to do on Monday</a></li>
+<li class="toc-l2"><a href="#where-to-read-next"><span class="toc-num">6.3</span> 6.3 Where to read next</a></li>
+<li class="toc-l2"><a href="#a-closing-observation"><span class="toc-num">6.4</span> 6.4 A closing observation</a></li>
+</ul>
+</nav>
+
+<div class="paper-body">
+<div class="center">
+<p><strong>A note on the name.</strong> This language has been carried
+in the research notes under the code name <em>MeTTaIL</em>, and before
+that as <em>rholang 1.4</em>. Its name is <span class="flang">f1r3<span class="fg">|@</span>ng</span>. The two glyphs in the middle of it
+are not decoration: <code>|</code> is parallel composition and
+<code>@</code> is quotation, the two operators everything else in the
+language is assembled from. Where earlier notes say MeTTaIL, read <span class="flang">f1r3<span class="fg">|@</span>ng</span>. <span class="flang">f1r3<span class="fg">|@</span>ng</span> inherits a good part of its control
+flow sublanguage from <em>rholang</em>, and this note says so where the
+debt is worth naming; but the inheritance is not an equivalence, and §<a
+href="#sec:graded" data-reference-type="ref"
+data-reference="sec:graded">5</a> is the reason. A <code>where</code>
+clause that answers with a value rather than a verdict is not a
+convenience on top of rholang. It changes what a program means.</p>
+</div>
+<h1 data-number="1" id="sec:preface"><span
+class="header-section-number">1</span> Before anything else</h1>
+<h2 data-number="1.1" id="who-this-is-for"><span
+class="header-section-number">1.1</span> Who this is for</h2>
+<p>This note is written for someone who ships software. It assumes
+fluency with SQL, comfort with at least one of LINQ, XQuery, list
+comprehensions or a collection pipeline API, and the ordinary working
+knowledge of concurrency that comes from having debugged it. It assumes
+no category theory, no process algebra, and no prior contact with the
+rho calculus.</p>
+<p>There is a companion document, <em>Graph-Structured Lambda Theories:
+A Reference for the Working Developer</em> [<a href="#ref-GSLTintro">30</a>], which covers overlapping ground for a
+reader who wants the theory first and is willing to spend a chapter on
+bisimulation to get it. This note is the other entrance to the same
+building. A reader who finishes here and wants proofs will find them
+there; a reader who starts there and wants to write code will find that
+here. Neither is a prerequisite for the other.</p>
+<h2 data-number="1.2" id="why-the-order-is-backwards"><span
+class="header-section-number">1.2</span> Why the order is backwards</h2>
+<p>The convention is to teach a language’s data definition language
+first — here are the types, here is how to make values — and its control
+flow language second. The convention is defensible and this note ignores
+it.</p>
+<p>The reason is that the control flow language of <span class="flang">f1r3<span class="fg">|@</span>ng</span> has a familiar door and the data
+definition language does not. Every working developer has written a
+query comprehension. Walking through that door and following the shape
+until it breaks generates, in order, exactly the questions the data
+definition language answers. Taught the other way round, the
+<code>Theory</code> block looks like an unusually elaborate schema
+declaration and its point is invisible.</p>
+<p>So the order here is: the comprehension; what a comprehension cannot
+do; what <span class="flang">f1r3<span class="fg">|@</span>ng</span> adds; what that
+addition forces us to have; and then, twice, what happens when we widen
+the thing that was added.</p>
+<h2 data-number="1.3" id="the-running-example"><span
+class="header-section-number">1.3</span> The running example</h2>
+<p>One example runs from beginning to end. A <em>forager</em> moves
+through an environment of specimens. Some specimens are rich and worth
+the cost of opening; some are decoys and are not. The forager has a
+cheap structural test it can apply, and that test is evidence rather
+than proof. It has a finite budget, it spends from that budget to look
+and to open, and if the budget reaches zero the forager stops —
+permanently.</p>
+<p>The example is drawn from a research programme on learning as
+computation, in which such a forager is a very small instance of a
+<em>mortal scientist</em> [<a href="#ref-ScientistNote">38</a>]: a computation that forms hypotheses
+about its environment, pays to test them, and is punished by the
+environment when they are wrong. The point of choosing it is not the
+biology. It is that the same four lines of code are legible at every
+stage of this note — as a query, as a transaction, as a hypothesis, and
+finally as a learning rule — and that the numbers quoted in the last
+part were measured by running it.</p>
+<h2 data-number="1.4"
+id="notation-and-three-conventions-worth-flagging"><span
+class="header-section-number">1.4</span> Notation, and three conventions
+worth flagging</h2>
+<p>The language is <span class="flang">f1r3<span class="fg">|@</span>ng</span>, and it has
+two halves. Its <em>control flow sublanguage</em> — CFL for short — is
+the part that makes things happen: sends, receipts, the comprehension of
+§<a href="#sec:cfl" data-reference-type="ref"
+data-reference="sec:cfl">2</a>. Its <em>data definition sublanguage</em>
+— DDL — is the part that says what there is: the <code>Module</code> and
+<code>Theory</code> declarations of §<a href="#sec:ddl"
+data-reference-type="ref" data-reference="sec:ddl">3</a>. Both acronyms
+are older than either language and are used here in their ordinary
+sense. Neither half has a separate name. There is one language.</p>
+<p><span class="flang">f1r3<span class="fg">|@</span>ng</span> inherits a good part of its
+CFL from <em>rholang</em>, and this note names the debt where it is
+useful — the sends and receipts of §<a href="#sec:cfl"
+data-reference-type="ref" data-reference="sec:cfl">2</a> will be
+familiar to anyone who has written rholang, and the translation table of
+§<a href="#sec:table" data-reference-type="ref"
+data-reference="sec:table">2.5</a> would read much the same for either.
+The inheritance is not an equivalence, and it is worth being precise
+about where it stops. The <code>where</code> clause of §<a
+href="#sec:graded" data-reference-type="ref"
+data-reference="sec:graded">5</a> answers with a value rather than a
+verdict, and a program whose guards return values is not a program with
+better guards — it is a different kind of object, a simulation of a
+population rather than a transition of a state. That single change puts
+<span class="flang">f1r3<span class="fg">|@</span>ng</span> somewhere rholang does not
+reach, and most of the second half of this note is an account of
+where.</p>
+<p>The calculus underneath both is the <span
+class="sans-serif">rho</span> calculus [<a href="#ref-MR05">46</a>]. The name abbreviates
+<strong>r</strong>eflective <strong>h</strong>igher
+<strong>o</strong>rder calculus, and dropping the periods gives the
+transliteration of the Greek letter after
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>π</mi><annotation encoding="application/x-tex">\pi</annotation></semantics></math>
+— a joke about what comes after the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>π</mi><annotation encoding="application/x-tex">\pi</annotation></semantics></math>-calculus.
+It is written “<span class="sans-serif">rho</span> calculus”, never with
+the Greek letter.</p>
+<p>Quotation is written <code>@P</code>: the name that stands for the
+process <code>P</code>. Dereference, sometimes called dropping or
+unquoting, is written <code>*x</code>: the process that the name
+<code>x</code> stands for. These are inverse in one direction on the
+nose — <code>@*x</code> is <code>x</code> — and that fact does more work
+later than it looks like it should.</p>
+<p>Code listings in this note come from two places, and it is worth
+knowing which is which. Listings labelled as running examples are taken
+verbatim from the <code>f1r3node-rust</code> repository [<a href="#ref-f1r3node">49</a>, <a href="#ref-modulesyntax">50</a>], where they
+compile and are covered by tests. Listings that illustrate a design
+under development are marked as such. Nothing here silently pretends
+that a plan is a product; §<a href="#sec:status"
+data-reference-type="ref" data-reference="sec:status">3.13</a> is a
+table of what actually runs.</p>
+<h1 data-number="2" id="sec:cfl"><span
+class="header-section-number">2</span> The control flow language</h1>
+<h2 data-number="2.1" id="the-forager-as-a-query"><span
+class="header-section-number">2.1</span> The forager, as a query</h2>
+<p>Start with the forager’s problem, stated the way a developer would
+state it first. There is a table of specimens. There is a cheap test,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>χ</mi><annotation encoding="application/x-tex">\chi</annotation></semantics></math>.
+The question is which specimens pass the test.</p>
+<div class="sourceCode" id="cb1" data-language="SQL"
+data-morekeywords="SELECT,FROM,WHERE"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span>   spec</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span>     prey</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span>    chi(spec)</span></code></pre></div>
+<p>Three clauses. <code>FROM</code> says where the data lives.
+<code>WHERE</code> says which of it we want. <code>SELECT</code> says
+what shape to hand back. The shape is so useful that it has been
+reinvented in every decade since it was introduced [<a href="#ref-Codd70">6</a>, <a href="#ref-ChamberlinBoyce74">5</a>].</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Dialect</strong></th>
+<th style="text-align: left;"><strong>The same query</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">SQL</td>
+<td
+style="text-align: left;"><code>SELECT spec FROM prey WHERE chi(spec)</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">LINQ</td>
+<td
+style="text-align: left;"><code>from spec in prey where Chi(spec) select spec</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">XQuery (FLWOR)</td>
+<td
+style="text-align: left;"><code>for $spec in $prey where chi($spec) return $spec</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Python</td>
+<td
+style="text-align: left;"><code>[spec for spec in prey if chi(spec)]</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Haskell</td>
+<td
+style="text-align: left;"><code>[ spec | spec &lt;- prey, chi spec ]</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The four descendants are LINQ [<a href="#ref-LINQ">14</a>], XQuery’s FLWOR [<a href="#ref-XQuery">26</a>], and the list comprehension in the form
+Wadler gave it [<a href="#ref-Wadler87">24</a>]. The
+persistence of the shape across five languages with nothing else in
+common is the fact worth taking seriously. It is not a syntax fashion.
+The comprehension is what data access looks like when you write down
+honestly what you are doing: naming a source, filtering it, and
+projecting the survivors.</p>
+<h2 data-number="2.2" id="what-linq-was-actually-for"><span
+class="header-section-number">2.2</span> What LINQ was actually for</h2>
+<p>There is a step in this history that is usually told as a story about
+convenience and is better told as a story about expressiveness.</p>
+<p>SQL is a complete language for asking. It is not a language for
+acting. A query returns a result set to <em>someone else</em> — an
+application, in another language, which then does whatever is to be
+done. The boundary between the two is where the impedance mismatch
+lives, and every ORM ever written is an attempt to plaster over it.</p>
+<p>LINQ exists for precisely this reason: it embeds the query
+comprehension <em>into</em> a host language, so that a developer can at
+last express the <code>DO</code>. That is the whole point. Once
+<code>from-where-select</code> is a first-class expression of C# or F#,
+the result of a query is an ordinary value in a language that can act on
+it, and the mismatch is gone — for reads. XQuery’s FLWOR has the same
+ambition inside XML, and the same limit; XQuery Update [<a href="#ref-XQueryUpdate">27</a>] was bolted on
+afterwards precisely because the <code>return</code> clause cannot cause
+anything.</p>
+<p><span class="flang">f1r3<span class="fg">|@</span>ng</span> takes the desideratum LINQ
+identified and goes the rest of the way. Rather than embedding the
+comprehension in a host language, it builds the language <em>around</em>
+the comprehension. The comprehension is not a query expression that
+yields a value; it is the sole way anything happens at all.</p>
+<h2 data-number="2.3" id="select-from-where-do"><span
+class="header-section-number">2.3</span>
+<code>SELECT-FROM-WHERE-DO</code></h2>
+<p>Here is the forager’s query again, in <span class="flang">f1r3<span class="fg">|@</span>ng</span>.</p>
+<pre><code>for( @spec &lt;- prey where Chi(spec) ) {
+  Break!(spec)
+}</code></pre>
+<p>Clause by clause, against the SQL:</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>SQL</strong></th>
+<th style="text-align: left;"><strong><span class="flang">f1r3<span class="fg">|@</span>ng</span></strong></th>
+<th style="text-align: left;"><strong>What changed</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>FROM prey</code></td>
+<td style="text-align: left;"><code>&lt;- prey</code></td>
+<td style="text-align: left;">the source is a <em>channel</em>, not a
+table</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>WHERE chi(spec)</code></td>
+<td style="text-align: left;"><code>where Chi(spec)</code></td>
+<td style="text-align: left;">nothing yet; §<a href="#sec:logic"
+data-reference-type="ref" data-reference="sec:logic">4</a> widens
+it</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>SELECT spec</code></td>
+<td style="text-align: left;"><code>@spec</code></td>
+<td style="text-align: left;">the pattern <em>is</em> the
+projection</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">—</td>
+<td style="text-align: left;"><code>{ Break!(spec) }</code></td>
+<td style="text-align: left;">the <code>DO</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Two of those rows deserve more than a line.</p>
+<h4 data-number="2.3.0.1"
+id="the-pattern-is-the-projection-and-it-is-stronger-than-one."><span
+class="header-section-number">2.3.0.1</span> The pattern is the
+projection, and it is stronger than one.</h4>
+<p>A <code>SELECT</code> list picks columns. A <span class="flang">f1r3<span class="fg">|@</span>ng</span> pattern matches structure: it can
+destructure nested terms, bind sub-terms to variables, and — as §<a
+href="#sec:ddl" data-reference-type="ref" data-reference="sec:ddl">3</a>
+explains — it matches <em>up to the equations of the theory that types
+the channel</em>, so two spellings of the same value match the same
+pattern without the developer arranging it. A pattern is a projection in
+the same sense that a regular expression is a substring test.</p>
+<h4 data-number="2.3.0.2" id="the-do-is-a-process-not-a-value."><span
+class="header-section-number">2.3.0.2</span> The <code>DO</code> is a
+process, not a value.</h4>
+<p>The continuation <code>{ Break!(spec) }</code> is not returned to a
+caller. It runs. It may send on channels, spawn further comprehensions,
+or do nothing. There is no host language to hand results back to,
+because there is no outside.</p>
+<h2 data-number="2.4" id="the-other-half-the-write"><span
+class="header-section-number">2.4</span> The other half: the write</h2>
+<p>A query language has one privileged verb. <span class="flang">f1r3<span class="fg">|@</span>ng</span> has two, and the second is the reason
+the first behaves differently than it does in SQL:</p>
+<pre><code>prey!( spec )</code></pre>
+<p>That is the write. It is a term, it composes in parallel with
+everything else using <code>|</code>, and — this is the part with
+consequences — it is <em>addressed the same way the read is</em>. The
+reader names <code>prey</code>; the writer names <code>prey</code>;
+neither names the other.</p>
+<p>Being explicit about both halves is what distinguishes this from a
+query language with side effects bolted on. In SQL, <code>INSERT</code>
+and <code>SELECT</code> are different kinds of statement, mediated by an
+engine that owns the table. Here they are two terms in one program, and
+the table is not owned by anybody.</p>
+<h2 data-number="2.5" id="sec:table"><span
+class="header-section-number">2.5</span> The translation table</h2>
+<p>The following is probably the most useful page of this note for a
+reader coming from SQL. <span class="flang">f1r3<span class="fg">|@</span>ng</span>
+distinguishes three ways of reading — inheriting the distinction, and
+the notation, from rholang — and it is exactly the distinction a
+database developer already makes between a destructive read, a standing
+query, and a plain look.</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong><span class="flang">f1r3<span class="fg">|@</span>ng</span></strong></th>
+<th style="text-align: left;"><strong>SQL reading</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>x!(Q)</code></td>
+<td style="text-align: left;"><code>INSERT</code> — put a row on
+<code>x</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>for(p &lt;- x)P</code></td>
+<td style="text-align: left;"><code>SELECT ... FOR UPDATE</code>, then
+<code>DELETE</code>, then act. The datum is consumed by exactly one
+reader.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>for(p &lt;= x)P</code></td>
+<td style="text-align: left;">a standing query, or a trigger: the reader
+persists and fires again on the next matching write.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>for(p &lt;&lt;- x)P</code></td>
+<td style="text-align: left;">plain <code>SELECT</code> — a peek. Reads
+without consuming, so the datum remains for others.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>where cond</code></td>
+<td style="text-align: left;"><code>WHERE</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>&amp;</code></td>
+<td style="text-align: left;">a join — and simultaneously a distributed
+atomic commit across the joined channels.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>;</code></td>
+<td style="text-align: left;">sequence: this group of receipts, then
+that one.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">the pattern</td>
+<td style="text-align: left;">the projection, structural rather than
+columnar, and matching up to the theory’s equations.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The three arrows are worth committing to memory, because choosing
+among them is the main design decision in a <span class="flang">f1r3<span class="fg">|@</span>ng</span> program and the choice is invisible in
+the SQL vocabulary that motivates it. A linear receipt
+<code>&lt;-</code> is the default. It consumes. Persistence
+<code>&lt;=</code> and peeking <code>&lt;&lt;-</code> are the
+deviations, and each gives something up: a persistent receipt gives up
+the guarantee that a datum is handled once; a peek gives up the
+guarantee that reading it means nobody else will.</p>
+<div id="rem:peek" class="remark">
+<p><em>Remark 2.1</em> (Perception must not be able to act). The
+difference between <code>&lt;-</code> and <code>&lt;&lt;-</code> is not
+efficiency. It is whether looking changes the world. A forager that
+reads the environment with <code>&lt;-</code> consumes what it observes;
+one that reads with <code>&lt;&lt;-</code> observes without disturbing.
+In the running example this matters immediately: the forager’s cheap
+test
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>χ</mi><annotation encoding="application/x-tex">\chi</annotation></semantics></math>
+must be a peek, or the act of assessing a specimen would itself claim
+the specimen. Getting this wrong produces a system that cannot observe
+anything without changing it, which is a real bug and not a
+philosophical one.</p>
+</div>
+<h2 data-number="2.6" id="joins-groups-and-where-the-where-goes"><span
+class="header-section-number">2.6</span> Joins, groups, and where the
+<code>where</code> goes</h2>
+<p>The full form of the comprehension is a sequence of groups, and each
+group is a set of receipts that must occur <em>together</em>:</p>
+<pre><code>for( ptrn_11 &lt;- chan_11 &amp; ... &amp; ptrn_1n &lt;- chan_1n  where cond_1 ;
+     ...                                                         ;
+     ptrn_k1 &lt;- chan_k1 &amp; ... &amp; ptrn_km &lt;- chan_km  where cond_k ) P</code></pre>
+<p>Inside a group, <code>&amp;</code> means simultaneity: all of those
+receipts happen at once or none of them do. Between groups,
+<code>;</code> means sequence. Each group carries its own
+<code>where</code>, and <code>cond_j</code> may mention any variable
+bound by a pattern in group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>≤</mo><mi>j</mi></mrow><annotation encoding="application/x-tex">i \leq j</annotation></semantics></math>
+— so the guard on a later group can test what an earlier group received.
+The comprehension commits only when every pattern matches and every
+condition holds.</p>
+<p>A SQL developer will recognise <code>&amp;</code> as a join and
+should immediately notice the difference. A SQL join is over static
+extents: the rows are all already there, and the join is a computation
+over them. A <span class="flang">f1r3<span class="fg">|@</span>ng</span> join is over
+<em>concurrent writers</em>: the rows are being produced by other
+running programs, and the join is a rendezvous. It succeeds when a
+matching datum is available on every joined channel at once, and until
+then it waits.</p>
+<div class="aside">
+<p><em>Aside 2.2</em> (A note for readers of the papers). Several of the
+research notes in this line write a single trailing <code>where</code>
+at the end of the whole comprehension. That is an abbreviation. The
+implemented form is the per-group one above, and it is the better one to
+learn from, because it makes visible exactly which bindings are in scope
+for which condition.</p>
+</div>
+<h2 data-number="2.7" id="sec:transaction"><span
+class="header-section-number">2.7</span> The witnessed transaction</h2>
+<p>Now the payoff for having made both halves explicit.</p>
+<p>When a reader and a writer meet on a channel, one rule fires. In the
+<span class="flang">f1r3<span class="fg">|@</span>ng</span> presentation of the
+calculus [<a href="#ref-mettailrust">48</a>] it is
+written like this — and this is a real excerpt from a language
+definition, not pseudocode:</p>
+<pre class="mettail" data-language="mettail"><code>(PPar {(PInput n ^x.p), (POutput n q), ...rest})
+    ~&gt; (PPar {(subst ^x.p (NQuote q)), ...rest});</code></pre>
+<p>In words: a parallel composition containing a receipt on
+<code>n</code> and a send on <code>n</code> rewrites to the same
+composition with both of them replaced by the receipt’s body, with the
+sent term substituted for the bound variable. Everything else,
+<code>...rest</code>, is untouched.</p>
+<p>The substitution is the point. After the step, the running term
+<em>contains the evidence</em> that this reader met this writer over
+this datum: the datum is sitting in the continuation, in the position
+the pattern named. Nothing external recorded the event. The event left a
+mark on the program.</p>
+<div id="claim:witness" class="claim">
+<p><strong>Claim 2.3</strong> (Transactions are a property of the term).
+<em>A communication is atomic, and its atomicity requires no support
+from the runtime. The condition is evaluated before the step commits; if
+it fails, nothing is consumed, so there is no partial state and nothing
+to compensate. If it succeeds, exactly one reader and one writer are
+consumed and the substitution records that they were the ones. There is
+no state in which the read happened and the write did not.</em></p>
+</div>
+<p>This is not a subtle argument, and the implementation makes it
+concrete. The comment at the head of the shipped example [<a href="#ref-f1r3node">49</a>] says it plainly: a
+failing guard leaves the message in the tuple space, exactly as a
+non-matching pattern does. A failed transaction is not rolled back; it
+never began.</p>
+<pre><code>// Receive-side `where` guard: only commit when both the spatial pattern
+// matches AND the guard evaluates to true. Failing the guard leaves the
+// message in the tuple space -- same as a non-matching pattern.
+new chan, stdout(`rho:io:stdout`) in {
+    chan!(-3) |
+    chan!(0)  |
+    chan!(7)  |
+    for (@x &lt;- chan where x &gt; 0) {
+        stdout!((&quot;kept&quot;, x))
+    }
+}</code></pre>
+<p>Three consequences a developer will care about.</p>
+<h4 data-number="2.7.0.1"
+id="multi-party-commit-is-a-language-construct."><span
+class="header-section-number">2.7.0.1</span> Multi-party commit is a
+language construct.</h4>
+<p>A join <code>&amp;</code> across
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math>
+channels is one transaction over
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math>
+resources. It either takes a datum from each or takes none. The protocol
+machinery that would normally implement this — prepare, vote, commit,
+the coordinator, the timeout — is not written, because the rule that
+fires is the multi-channel one.</p>
+<h4 data-number="2.7.0.2" id="the-witness-is-where-cost-attaches."><span
+class="header-section-number">2.7.0.2</span> The witness is where cost
+attaches.</h4>
+<p>Because there is an identified event, there is something to charge
+for. This is what makes the metering of §<a href="#sec:cost"
+data-reference-type="ref" data-reference="sec:cost">3.12</a> possible
+without instrumenting an interpreter: the unit of billing is the same
+unit as the unit of commitment.</p>
+<h4 data-number="2.7.0.3" id="candidates."><span
+class="header-section-number">2.7.0.3</span> Candidates.</h4>
+<p>For a join across several channels with several available data, there
+may be more than one way to assign data to patterns. Each such
+assignment is a <em>candidate</em>. Ordinarily one of them happens and
+the others do not, and a developer never thinks about it. Keep the word
+anyway: candidates are the thread that runs through the rest of this
+note. In §<a href="#sec:logic" data-reference-type="ref"
+data-reference="sec:logic">4</a> a condition is evaluated per candidate;
+in §<a href="#sec:graded" data-reference-type="ref"
+data-reference="sec:graded">5</a> a candidate carries a weight rather
+than a verdict, and everything interesting follows from that.</p>
+<h2 data-number="2.8" id="the-forager-in-full"><span
+class="header-section-number">2.8</span> The forager, in full</h2>
+<p>Enough machinery is now on the table to write the running example
+properly. The forager has a belief, held as data on a channel. It races
+two courses of action: open the specimen, or ignore it and graze a
+low-yield but safe alternative.</p>
+<pre><code>new bel, prey, wall in {
+  bel!( (1, 0.5) ) |                    // (n, s): one unit of prior evidence
+
+  // the two branches race for the belief and the specimen
+  for( @(n,s) &lt;- bel ; @spec &lt;- prey  where  Chi(spec) ) {
+    Break!(spec) | bel!( revise(n, s, spec) )
+  } |
+  for( @(n,s) &lt;- bel ; @spec &lt;- prey  where  g ) {
+    Graze!(*wall) | bel!( (n, s) )
+  }
+}</code></pre>
+<p>Read it as a developer. Two comprehensions compete for the same two
+resources: the belief and the next specimen. Whichever fires consumes
+both, does its work, and puts an updated belief back. Because the belief
+is consumed, the two branches cannot both act on the same specimen —
+mutual exclusion is not arranged, it is what a linear receipt means.</p>
+<p>Three questions are now unavoidable, and they are the agenda for the
+rest of this note.</p>
+<ol>
+<li><p><code>Chi(spec)</code> is a condition about the
+<em>structure</em> of a specimen. Where does the vocabulary for saying
+that come from? (§<a href="#sec:ddl" data-reference-type="ref"
+data-reference="sec:ddl">3</a>.)</p></li>
+<li><p>What else could a condition say, beyond structure — and what does
+saying more cost? (§<a href="#sec:logic" data-reference-type="ref"
+data-reference="sec:logic">4</a>.)</p></li>
+<li><p><code>g</code> in the second branch is not a Boolean. It is a
+number. What is a numeric <code>where</code> clause, and what does a
+program mean when its conditions stop answering yes or no? (§<a
+href="#sec:graded" data-reference-type="ref"
+data-reference="sec:graded">5</a>.)</p></li>
+</ol>
+<h1 data-number="3" id="sec:ddl"><span
+class="header-section-number">3</span> Where the pattern and the
+condition come from</h1>
+<h2 data-number="3.1"
+id="the-question-the-comprehension-cannot-answer"><span
+class="header-section-number">3.1</span> The question the comprehension
+cannot answer</h2>
+<p>The comprehension of §<a href="#sec:cfl" data-reference-type="ref"
+data-reference="sec:cfl">2</a> presupposes two things it does not
+supply. Its pattern <code>@spec</code> must have a grammar of terms to
+match against. Its condition <code>Chi(spec)</code> is a claim about
+structure, so there must be a notion of what structure a specimen
+has.</p>
+<p>In SQL both come from the schema. <code>spec</code> is a row of a
+known table with known column types, and <code>chi</code> is a predicate
+over those columns. The schema is the data definition language, and the
+query language leans on it entirely.</p>
+<p><span class="flang">f1r3<span class="fg">|@</span>ng</span>’s schema is the
+<code>Theory</code> declaration, and the reason to keep reading is that
+it is a great deal more than a schema.</p>
+<h2 data-number="3.2" id="a-theory-declaration-whole"><span
+class="header-section-number">3.2</span> A <code>Theory</code>
+declaration, whole</h2>
+<p>Here is one, complete [<a href="#ref-modulesyntax">50</a>]. It defines the <span
+class="sans-serif">rho</span> calculus [<a href="#ref-MR05">46</a>] itself — which is a useful thing to see early,
+because it shows that the calculus <span class="flang">f1r3<span class="fg">|@</span>ng</span> is built on is not privileged: it is
+one language definition among others, written in the same form a
+developer would use for an invoice format.</p>
+<pre class="mettail" data-language="mettail"><code>Theory RhoCalc() {
+    Types {
+        Proc;
+        Name;
+    }
+    Terms {
+        PZero  . |- &quot;0&quot; : Proc;
+        PDrop  . n:Name |- &quot;*&quot; &quot;(&quot; n &quot;)&quot; : Proc;
+        POutput. n:Name, q:Proc |- n &quot;!&quot; &quot;(&quot; q &quot;)&quot; : Proc;
+        PInput . n:Name, ^x.p:[Name -&gt; Proc] |- n &quot;?&quot; x &quot;.&quot; &quot;{&quot; p &quot;}&quot; : Proc;
+        PPar   . ps:HashBag(Proc) |- &quot;{&quot; ps.*sep(&quot;|&quot;) &quot;}&quot; : Proc;
+        NQuote . p:Proc |- &quot;@&quot; &quot;(&quot; p &quot;)&quot; : Name;
+    }
+    Equations {
+        (NQuote (PDrop N)) == N;
+    }
+    Rewrites {
+        RComm : (PPar {(PInput n ^x.p), (POutput n q), ...rest})
+                  ~&gt; (PPar {(subst ^x.p (NQuote q)), ...rest});
+        RDrop : (PDrop (NQuote P)) ~&gt; P;
+        RPar  : if S ~&gt; T then (PPar {S, ...rest}) ~&gt; (PPar {T, ...rest});
+    }
+}</code></pre>
+<p>Four blocks. <code>Types</code> names the syntactic categories.
+<code>Terms</code> gives one constructor per line: a label, then the
+arguments it takes with their sorts, then — after the turnstile — the
+concrete syntax written in terms of those argument names, then the
+category it produces. So the grammar and the pretty-printer come from
+the same declaration. <code>Equations</code> says which distinct terms
+are to be regarded as the same. <code>Rewrites</code> says how terms
+move — in the style Plotkin introduced for operational semantics [<a href="#ref-Plotkin81">16</a>] and Milner used to such
+effect for processes [<a href="#ref-Milner92">15</a>].</p>
+<p>From that block, the toolchain generates the abstract syntax types, a
+parser and a bidirectional printer, capture-avoiding substitution that
+respects binding, and a rewrite engine.</p>
+<p>Three details in the <code>Terms</code> block repay a second look,
+because each is carrying weight a conventional schema language has no
+way to carry. <code>^x.p:[Name -&gt; Proc]</code> declares that
+<code>PInput</code>’s second argument is an <em>abstraction</em>:
+<code>x</code> binds in <code>p</code>. Binding is part of the data
+declaration, which is why substitution can be generated rather than
+hand-written. <code>ps:HashBag(Proc)</code> declares that
+<code>PPar</code> takes an unordered collection with multiplicity, and
+<code>ps.*sep("|")</code> says how to render one. And in
+<code>RComm</code>, <code>...rest</code> binds whatever else was in the
+bag and puts it back — which is what lets a rule fire on two
+participants inside an arbitrary parallel composition without saying
+anything about the others.</p>
+<h2 data-number="3.3" id="sec:rungs"><span
+class="header-section-number">3.3</span> The four rungs</h2>
+<p>The blocks form a ladder, and where a given language definition stops
+on that ladder determines what kind of thing it is.</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Blocks populated</strong></th>
+<th style="text-align: left;"><strong>What you can present</strong></th>
+<th style="text-align: left;"><strong>The familiar name</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>Types</code>,
+<code>Terms</code></td>
+<td style="text-align: left;">free term algebras</td>
+<td style="text-align: left;">algebraic data types</td>
+</tr>
+<tr class="even">
+<td
+style="text-align: left;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>+</mo><annotation encoding="application/x-tex">+</annotation></semantics></math>
+<code>Equations</code></td>
+<td style="text-align: left;">quotients of free algebras</td>
+<td style="text-align: left;">finitely presentable universal
+algebra</td>
+</tr>
+<tr class="odd">
+<td
+style="text-align: left;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>+</mo><annotation encoding="application/x-tex">+</annotation></semantics></math>
+<code>Rewrites</code></td>
+<td style="text-align: left;">theories with dynamics</td>
+<td style="text-align: left;">domain-specific languages</td>
+</tr>
+<tr class="even">
+<td
+style="text-align: left;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>+</mo><annotation encoding="application/x-tex">+</annotation></semantics></math>
+parameters, and the algebra of theories</td>
+<td style="text-align: left;">theories built from other theories</td>
+<td style="text-align: left;">modules, in the sense of ML functors</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>An ordinary data definition language stops on the first rung.
+Records, sums, products, lists, maps: that is the whole of what most
+type systems can say about data, and it is a lot. The second and third
+rungs are where this differs, and the second rung is the one that will
+surprise a working developer most, so take it first. The fourth is the
+subject of §<a href="#sec:reuse" data-reference-type="ref"
+data-reference="sec:reuse">3.6</a>–§<a href="#sec:module"
+data-reference-type="ref" data-reference="sec:module">3.7</a>, and
+answers the question every developer asks on seeing the declaration
+above: <em>can I reuse part of one of these?</em></p>
+<h2 data-number="3.4"
+id="rung-two-equations-or-the-comment-your-type-system-cannot-read"><span
+class="header-section-number">3.4</span> Rung two: equations, or the
+comment your type system cannot read</h2>
+<p>Every codebase of any size contains comments of this form:</p>
+<blockquote>
+<p><em>This is a list, but order doesn’t matter — always compare as a
+set.</em><br />
+<em>This is a string, but compare case-insensitively.</em><br />
+<em>Addresses with an empty line-2 are equal to the same address without
+it.</em></p>
+</blockquote>
+<p>Each is an equation. Each is being maintained by hand, in prose,
+because the type system cannot express it. The consequences are
+familiar: a hand-written <code>equals</code>, a normalisation function
+called on the way in and forgotten in one code path, a cache keyed by
+the wrong representative, and a class of bug that only appears when two
+spellings of the same value meet.</p>
+<p>An <code>equations</code> block moves that comment into the
+definition:</p>
+<pre class="mettail" data-language="mettail"><code>Equations {
+    (NQuote (PDrop N)) == N;
+}</code></pre>
+<p>The payoff is not that the compiler now checks something. It is that
+<em>pattern matching happens up to the equations</em>. When the
+comprehension of §<a href="#sec:cfl" data-reference-type="ref"
+data-reference="sec:cfl">2</a> matches <code>@spec</code> against a
+datum, it matches modulo the theory that types the channel. A developer
+never writes normalisation, never chooses a canonical form, and never
+has the bug where one code path forgot.</p>
+<p>This is why the <code>PPar</code> constructor above takes a
+<code>HashBag</code> rather than a list: parallel composition is
+associative and commutative, and rather than being a special case
+hard-wired into an interpreter, that is a property of the data
+declaration. The same mechanism is available for an invoice.</p>
+<div class="aside">
+<p><em>Aside 3.1</em> (The reach of the second rung). “Finitely
+presentable universal algebra” is the mathematician’s name for the
+second rung, and it is worth translating: it means anything you can
+specify by saying what the constructors are and which combinations of
+them are equal. Monoids, groups, lattices, sets-as-quotients-of-lists,
+normalised paths, case-insensitive strings, and commutative parallel
+composition are all on this rung. Most of a data model’s invisible
+invariants live here.</p>
+</div>
+<h2 data-number="3.5"
+id="rung-three-rewrites-or-data-that-wiggles"><span
+class="header-section-number">3.5</span> Rung three: rewrites, or data
+that wiggles</h2>
+<p>The third rung adds <code>rewrites</code>, and with it the thing an
+ordinary schema cannot do: the data moves on its own.</p>
+<pre class="mettail" data-language="mettail"><code>Rewrites {
+    Beta     : (App (Lam ^x.body) arg) ~&gt; (subst ^x.body arg);
+    AppCongL : if M0 ~&gt; M1 then (App M0 N) ~&gt; (App M1 N);
+}</code></pre>
+<p>That is the lambda calculus, in two of the four lines a real
+definition takes. The first line is the computation rule — and note that
+beta reduction is literally the substitution of an argument into an
+abstraction, written as such. The second is a congruence rule saying
+where the first is allowed to fire; the <code>if …then</code> premise is
+the horizontal bar of an inference rule. Together they make a term of
+type <code>Term</code> not an inert value but a small running
+program.</p>
+<p>Once a channel is typed by such a definition, sending on that channel
+means sending a term of a language — a term that can be inspected,
+matched against, and stepped by the recipient. Two agents that share a
+language definition can exchange programs in a domain-specific language
+constructed for the purpose, and the recipient knows what it received
+because the definition came with it.</p>
+<p>The slogan for this rung is <em>the data can wiggle</em>, and its
+practical form is that the boundary between data and code, which most
+systems maintain by convention and defend with a serialisation format,
+is a dial here rather than a wall.</p>
+<h2 data-number="3.6" id="sec:reuse"><span
+class="header-section-number">3.6</span> Rung four: a language
+definition takes parameters</h2>
+<p>A developer who has just written the <code>RhoCalc</code> declaration
+above will notice something about it. Parallel composition is
+associative, it is commutative, and <code>PZero</code> is its unit. That
+is a commutative monoid. It is also, verbatim, the structure of integer
+addition, of string concatenation up to reordering, of set union, and of
+every other commutative monoid the developer has ever implemented.
+Writing it out again is the same waste it always was.</p>
+<p>The fourth rung is the answer, and it is the familiar one.</p>
+<pre class="mettail" data-language="mettail"><code>Theory EmptySet() {
+    Types { Elem; }
+    Exports { Elem; }
+}
+
+Theory Monoid(s: EmptySet) {
+    s
+      Terms {
+        One  . |- &quot;1&quot; : Elem;
+        Mult . x:Elem, y:Elem |- &quot;(&quot; x &quot;*&quot; y &quot;)&quot; : Elem;
+      }
+      Equations {
+        (Mult (Mult x y) z) == (Mult x (Mult y z));
+        (Mult x (One)) == x;
+        (Mult (One) x) == x;
+      }
+}
+
+Theory CommutativeMonoid(m: Monoid) {
+    m
+      Replacements {
+        One  =&gt; Zero . |- &quot;0&quot; : Elem;
+        Mult =&gt; Plus . x:Elem, y:Elem |- &quot;(&quot; x &quot;+&quot; y &quot;)&quot; : Elem;
+      }
+      Equations {
+        (Plus x y) == (Plus y x);
+      }
+}</code></pre>
+<p>Two things are happening, and the second is the unfamiliar one.</p>
+<p><code>Monoid</code> takes a theory as a parameter and extends it.
+That is an ML functor, or a generic class, or whatever the reader’s
+language calls a module parameterised by another module. Note where the
+parameter appears: not only in the head, but as the <em>first thing in
+the body</em>. <code>s</code> is the theory the chain starts from, and
+each block after it applies to the result of the one before. A body is
+not a record of five fields; it is a pipeline.</p>
+<p>And <code>CommutativeMonoid</code> does something a generic class
+cannot: a <code>Replacements</code> block <em>renames an inherited
+constructor and gives it new concrete syntax</em>. <code>Zero</code> and
+<code>Plus</code> are not new operations sitting alongside
+<code>One</code> and <code>Mult</code>; they <em>are</em>
+<code>One</code> and <code>Mult</code>, spelled additively. Every
+equation proved of the one holds of the other, because they are the same
+element of the same theory. This is the distinction that the rest of §<a
+href="#sec:sharing" data-reference-type="ref"
+data-reference="sec:sharing">3.8</a> turns on, so it is worth naming
+now: a replacement changes a spelling and preserves an identity.</p>
+<p>Which is what lets <span class="flang">f1r3<span class="fg">|@</span>ng</span>’s parallel
+composition be defined rather than declared:</p>
+<pre class="mettail" data-language="mettail"><code>Theory ParMonoid(cm: u.CommutativeMonoid) {
+    cm
+      Exports {
+        Elem =&gt; Proc;
+      }
+      Replacements {
+        Zero =&gt; PZero . |- &quot;0&quot; : Proc;
+        Plus =&gt; PPar  . ps:HashBag(Proc) |- &quot;{&quot; ps.*sep(&quot;|&quot;) &quot;}&quot; : Proc;
+      }
+      Rewrites {
+        RPar : if S ~&gt; T then (PPar {S, ...rest}) ~&gt; (PPar {T, ...rest});
+      }
+}</code></pre>
+<p>Parallel composition is commutative-monoid multiplication with the
+carrier renamed to <code>Proc</code>. That is the whole definition.
+Associativity, commutativity, and the unit law arrive with it and are
+not restated.</p>
+<div class="aside">
+<p><em>Aside 3.2</em> (Why the bag, again). Notice what <code>PPar</code>
+did to arity on its way through. <code>Plus</code> is binary.
+<code>PPar</code> takes a <code>HashBag</code>. A bag is precisely a
+sequence quotiented by associativity and commutativity, so moving to a
+bag turns two of the inherited equations from things checked during
+matching into things true of the representation. This is the second rung
+and the first rung meeting: an equation, made structural. It is also the
+one place where the surface currently outruns its own checking, and §<a
+href="#sec:status" data-reference-type="ref"
+data-reference="sec:status">3.13</a> says so.</p>
+</div>
+<h2 data-number="3.7" id="sec:module"><span
+class="header-section-number">3.7</span> The module declaration</h2>
+<p>Theories do not float free. They are declared inside a
+<code>Module</code>, which is the unit of distribution — the thing that
+has a name, gets published to an address, and is imported by other
+people’s code.</p>
+<pre class="mettail" data-language="mettail"><code>import &quot;UnivAlg.module&quot; as u
+import Monoid from &quot;UnivAlg.module&quot;
+
+Module Rholang {
+
+    Theory ParMonoid(cm: u.CommutativeMonoid) { ... }
+    Theory QuoteDropCalc(pm: ParMonoid)       { ... }
+    Theory RhoCalc(qd: QuoteDropCalc)         { ... }
+    Theory NewReplCalc(qd: QuoteDropCalc)     { ... }
+
+    Theory Rholang(nr: NewReplCalc, rc: RhoCalc) {
+        nr \/ rc
+    }
+
+    Theory FreeRholang() {
+        let s  = u.EmptySet() in (
+        let m  = u.Monoid(s) in (
+        let cm = u.CommutativeMonoid(m) in (
+        let pm = ParMonoid(cm) in (
+        let qd = QuoteDropCalc(pm) in (
+        let nr = NewReplCalc(qd) in (
+        let rc = RhoCalc(qd) in (
+        Rholang(nr, rc)
+        )))))))
+    }
+
+    theory FreeRholang()
+}</code></pre>
+<p>The theory names are the historical ones and are worth reading as
+such: <code>Rholang</code> here names the calculus <span class="flang">f1r3<span class="fg">|@</span>ng</span> inherited its control flow from,
+presented as one theory among others. Naming it is the point — §<a
+href="#sec:ddl" data-reference-type="ref" data-reference="sec:ddl">3</a>
+began by saying the calculus underneath is not privileged, and this is
+what that looks like in a file.</p>
+<p>Four things in that skeleton are worth calling out, because each is a
+decision a developer will meet on the first afternoon.</p>
+<h4 data-number="3.7.0.1" id="imports-name-an-address-not-a-path."><span
+class="header-section-number">3.7.0.1</span> Imports name an address,
+not a path.</h4>
+<p><code>import "…" as u</code> brings a whole module in under an alias,
+after which its theories are reached by dotted path —
+<code>u.CommutativeMonoid</code>. <code>import Monoid from "…"</code>
+brings one theory in unqualified. The string is a URL. This is the
+choice that aligns the module system with the deployment target: a
+language definition published on chain has an address, and importing it
+is the same act whether it came from the next directory or from another
+party’s node. Resolution happens at compile time, in the client
+toolchain. A node never fetches anything.</p>
+<h4 data-number="3.7.0.2"
+id="capital-theory-declares-lowercase-theory-instantiates."><span
+class="header-section-number">3.7.0.2</span> Capital <code>Theory</code>
+declares; lowercase <code>theory</code> instantiates.</h4>
+<p>A module full of <code>Theory</code> declarations has produced no
+language yet; it has produced a vocabulary for building one. The final
+<code>theory FreeRholang()</code> is the entry point, and it is what the
+elaborator runs. The last such line in the entry module wins. Keeping
+the two acts apart is what allows a library module to ship a dozen
+theories and commit to none of them.</p>
+<h4 data-number="3.7.0.3"
+id="a-theory-body-is-an-expression-and-it-has-a-grammar."><span
+class="header-section-number">3.7.0.3</span> A theory body is an
+expression, and it has a grammar.</h4>
+<p>Everything between the braces of a <code>Theory</code> declaration is
+one expression built from three kinds of thing.</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Kind</strong></th>
+<th style="text-align: left;"><strong>Forms</strong></th>
+<th style="text-align: left;"><strong>What it does</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">atoms</td>
+<td style="text-align: left;"><code>Empty</code>,
+<code>free(Path)</code>, a parameter name, an application
+<code>QuoteDropCalc(pm)</code>, <code>let x = e in (e)</code></td>
+<td style="text-align: left;">starts a chain, or names an instance so it
+can be used twice</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">postfix builders</td>
+<td style="text-align: left;"><code>Types</code>, <code>Exports</code>,
+<code>Replacements</code>, <code>Terms</code>, <code>Equations</code>,
+<code>Rewrites</code></td>
+<td style="text-align: left;">each takes the theory to its left and
+returns a larger one; they chain, and they may repeat</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">combinators</td>
+<td
+style="text-align: left;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>/</mi><mspace width="-0.167em"></mspace><mo>∖</mo></mrow><annotation encoding="application/x-tex">/\!\backslash</annotation></semantics></math>
+then
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∖</mo><mspace width="-0.167em"></mspace><mi>/</mi></mrow><annotation encoding="application/x-tex">\backslash\!/</annotation></semantics></math>
+then
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>∖</mo><annotation encoding="application/x-tex">\backslash</annotation></semantics></math>,
+tightest to loosest</td>
+<td style="text-align: left;">common fragment, combination,
+subtraction</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Because the builders form an ordered chain rather than a record, they
+can interleave — <code>AbelianGroup</code> in the universal-algebra
+module does a <code>Replacements</code> block and then joins with a
+sibling — and they carry an obligation the record form did not: <em>a
+<code>Terms</code> block must precede any <code>Equations</code> or
+<code>Rewrites</code> block that mentions its labels</em>. A forward
+reference is a diagnostic, not a resolution pass.</p>
+<h4 data-number="3.7.0.4" id="types-declares-exports-publishes."><span
+class="header-section-number">3.7.0.4</span> <code>Types</code>
+declares, <code>Exports</code> publishes.</h4>
+<p>These are two jobs and they used to be one, which is worth a sentence
+because the separation is what turns a class of modelling error into a
+compiler message. <code>Types</code> brings a syntactic category into
+being. <code>Exports</code> controls which of them a consumer can see,
+and optionally renames them on the way out —
+<code>Elem =&gt; Proc</code> above. A theory can now have a category
+that is real and private. More to the point, two theories that each
+declare a category called <code>Name</code> are now visibly declaring
+two different categories, which is exactly the mistake §<a
+href="#sec:sharing" data-reference-type="ref"
+data-reference="sec:sharing">3.8</a> is about.</p>
+<div class="aside">
+<p><em>Aside 3.3</em> (What a replacement does not need any more). An
+earlier form of <code>Replacements</code> carried an integer profile —
+<code>[0,1]</code> — to say how the replacement’s arguments corresponded
+to the original’s. Term rules now name their arguments, so the
+correspondence is read off the names and the profile is gone. Compare
+<code>Mult</code>’s context <code>x:Elem, y:Elem</code> with
+<code>Plus</code>’s: identical names, identity mapping. Naming them in
+the other order permutes them. This is a small thing that removes an
+entire category of silent error.</p>
+</div>
+<h2 data-number="3.8" id="sec:sharing"><span
+class="header-section-number">3.8</span> What sharing means, and why the
+compiler argues about it</h2>
+<p>The combination operator has a subtlety that is worth a developer’s
+attention, because the compiler will raise it whether or not the
+developer was expecting the conversation.</p>
+<p>Look again at <code>FreeRholang</code>. One theory adds restriction
+and replication, another adds send and receive, and both are built on
+<code>QuoteDropCalc</code>. Combining them must not produce two parallel
+compositions, two <code>Name</code> categories, and two quotation
+operators.</p>
+<p>The <code>let</code> chain is what prevents it.
+<code>QuoteDropCalc(pm)</code> is elaborated once and bound to
+<code>qd</code>; both <code>nr</code> and <code>rc</code> are built from
+that one instance; so when they are combined, everything they inherited
+from it is recognised as the same thing arriving by two routes, and
+appears once. The combination is a pushout over the shared ancestor
+rather than a union.</p>
+<p>What makes that work mechanically is that every element gets an
+identity token when it is introduced, and carries it through inheritance
+— including through a <code>Replacements</code> block, which is why
+renaming preserves sharing. Two elements are the same element if they
+have the same origin. Combination identifies elements by origin, the
+common fragment intersects by origin, and subtraction removes by origin.
+Names have nothing to do with it.</p>
+<p>The practical consequence is that <em>sharing is a claim, and the
+compiler holds you to it</em>. Build the two halves from two separate
+instances and combine them, and the result is a diagnostic rather than a
+silently doubled calculus. The reference elaborator ships a corpus of
+these; the four that a working developer is most likely to trip over are
+worth having seen once:</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Diagnostic</strong></th>
+<th style="text-align: left;"><strong>What you did, and what it
+means</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>[join-collision]</code></td>
+<td style="text-align: left;">combined two theories that each introduced
+a label or a category independently. They are two things with one
+spelling. Either they should have descended from a shared instance, or
+they should have different names</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>[unshared-name]</code></td>
+<td style="text-align: left;">the same, in its most common disguise: two
+independently instantiated copies of the same parameter theory passed
+into one combination</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>[repeat-label]</code></td>
+<td style="text-align: left;">declared a label twice in one theory. A
+replacement retargets an existing label; it does not introduce a second
+one</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>[forward-reference]</code></td>
+<td style="text-align: left;">an <code>Equations</code> or
+<code>Rewrites</code> block mentioned a label its own chain had not yet
+introduced</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>This is unfamiliar and it is worth sitting with, because it is the
+same diagnostic that catches genuine modelling errors. A rig has one
+carrier and two monoid structures on it — addition and multiplication —
+and the natural way to write it is to instantiate <code>Monoid</code>
+once and pass it as both arguments. That is wrong: it asserts that
+addition and multiplication are the same operation. The compiler says
+so. Instantiating <code>Monoid</code> twice over one shared
+<code>EmptySet</code> is the correct structure, and it says exactly what
+a rig is: two monoids, one carrier.</p>
+<p>A developer used to inheritance will recognise the diamond problem
+here, and should notice that the resolution is different in kind. There
+is no linearised method resolution order and no “last one wins”. Two
+elements are the same element if they have the same origin, and
+otherwise they are two elements; if they also have the same name, that
+is an error rather than a silent override.</p>
+<h2 data-number="3.9" id="sec:loadtest"><span
+class="header-section-number">3.9</span> The parameter as a contract:
+extending a theory you did not write</h2>
+<p>The reuse story so far is about not repeating yourself. There is a
+second payoff, and for anyone maintaining a language definition
+alongside other people it is the larger one.</p>
+<p>Consider a design that has an object language — a dependently typed
+calculus with typed holes, used as the specification format for a
+marketplace of partly specified programs [<a href="#ref-PF">43</a>] — and a second design that adds prices to it.
+The priced language is not a copy of the first with extra lines. It is a
+theory that takes the first as a parameter:</p>
+<pre class="mettail" data-language="mettail"><code>Theory PricedPFLam(pf: PFLam) {
+    pf
+      Types {
+        Price;       // an element of the preference quantale
+        Obsv;        // a time-varying observable
+      }
+      Terms {
+        Priced . h:HoleId, ty:Term, p:Price
+               |- &quot;?&quot; h &quot;:&quot; ty &quot;@&quot; p                  : Term;
+        Scale  . o:Obsv, c:Term |- &quot;scale&quot; &quot;(&quot; o &quot;,&quot; c &quot;)&quot; : Term;
+        Give   . c:Term         |- &quot;give&quot; &quot;(&quot; c &quot;)&quot;        : Term;
+      }
+      Equations {
+        (Give (Give c)) == c;
+      }
+}</code></pre>
+<p>Everything established about <code>PFLam</code> arrives with the
+parameter. Nothing is restated. And — the point — if a later revision of
+<code>PFLam</code> renames <code>Hole</code> or changes its arity, the
+break is reported <em>here</em>, at elaboration, rather than discovered
+later by a reader noticing that two documents disagree. Before the
+fourth rung existed, this delta was written as prose on a listing:
+<em>only additions shown</em>. A prose annotation cannot be checked. A
+parameter can.</p>
+<p>The same applies at combination. If a venue also imports a reputation
+theory over the same hole identifiers, the two join over their shared
+<code>PFLam</code> instance and the identifiers are identified once.
+Passing two independently instantiated copies is rejected, and
+correctly: it would assert that the priced holes and the reputed holes
+are different holes.</p>
+<h2 data-number="3.10"
+id="channels-are-typed-by-language-definitions"><span
+class="header-section-number">3.10</span> Channels are typed by language
+definitions</h2>
+<p>The connection back to §<a href="#sec:cfl" data-reference-type="ref"
+data-reference="sec:cfl">2</a> is one sentence: <em>a channel’s type is
+a language definition</em> — which is to say, an elaborated
+<code>Theory</code>.</p>
+<p>That single design decision explains the rest of the note. Sending on
+the channel means sending a term of that theory. Matching a pattern on
+it means matching a term of that theory, up to that theory’s equations.
+And — the point of §<a href="#sec:logic" data-reference-type="ref"
+data-reference="sec:logic">4</a> — asking a condition about what arrived
+means asking a question in a logic that is <em>generated from</em> that
+theory, because the theory says what there is to ask about.</p>
+<p>For the forager, this means the specimen language is a language
+definition, <code>Chi</code> is a formula in the logic that definition
+generates, and there was never a moment at which someone hand-designed a
+predicate vocabulary.</p>
+<h2 data-number="3.11" id="sec:metta"><span
+class="header-section-number">3.11</span> MeTTa, and what this adds to
+it</h2>
+<p>Readers coming from SingularityNET’s Hyperon stack [<a href="#ref-Hyperon">11</a>] will have recognised the
+shape of the third rung, because MeTTa is built on it. The relationship
+is worth stating precisely, in both directions.</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>MeTTa</strong></th>
+<th style="text-align: left;"><strong><span class="flang">f1r3<span class="fg">|@</span>ng</span></strong></th>
+<th style="text-align: left;"><strong>Relationship</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">rules</td>
+<td style="text-align: left;">the <code>Rewrites</code> block</td>
+<td style="text-align: left;">subsumed; MeTTa’s rules are rewrites in
+this sense</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">atom spaces</td>
+<td style="text-align: left;">channels</td>
+<td style="text-align: left;">subsumed, and typed: a channel carries
+terms of a declared language, an atom space carries atoms</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">the <code>Equations</code> block</td>
+<td style="text-align: left;"><strong>absent in MeTTa</strong>: no
+equational layer, so every quotient must be hand-coded as rules, and
+confluence becomes the programmer’s problem</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">query, then update</td>
+<td style="text-align: left;">one witnessed communication</td>
+<td style="text-align: left;"><strong>absent in MeTTa</strong>: query
+and update are separate acts, so there is no atomic multi-party meeting
+and no witness</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The two gaps compound. Without equations, a developer who wants
+“these two atoms are the same” writes rewrite rules that say so, and
+then owns the confluence question — whether the order in which rules
+fire can change the answer. Without a witnessed transaction, a developer
+who wants two atom spaces updated together writes a protocol, and then
+owns the partial-failure question. Both are exactly the questions the
+two blocks and the communication rule answer for free.</p>
+<p>None of which is a dismissal. MeTTa has a large working ecosystem, a
+substantial body of practice around the atom space as a shared knowledge
+medium, and Probabilistic Logic Networks [<a href="#ref-PLN">12</a>], which is a serious piece of engineering for
+reasoning under uncertainty. It is worth saying plainly that PLN is not
+left behind here: in §<a href="#sec:graded" data-reference-type="ref"
+data-reference="sec:graded">5</a> it comes back as one of the value
+algebras a <code>where</code> clause can be graded in, which is to say
+that PLN inference can drive execution rather than sitting beside it.
+The relationship this note is proposing is embedding with an addition,
+not replacement.</p>
+<h2 data-number="3.12" id="sec:cost"><span
+class="header-section-number">3.12</span> What an operation costs</h2>
+<p>One more piece belongs to the data definition story, because it is
+the thing that makes the forager’s budget real rather than notional.</p>
+<p>Cost accounting in this system adds exactly two surface forms, and
+both of them lower to ordinary <span class="flang">f1r3<span class="fg">|@</span>ng</span>:</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Surface</strong></th>
+<th style="text-align: left;"><strong>Lowers to</strong></th>
+<th style="text-align: left;"><strong>Which is</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>s :: ()</code></td>
+<td
+style="text-align: left;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Σ</mi><mo stretchy="false" form="prefix">⟦</mo><mi>s</mi><mo stretchy="false" form="postfix">⟧</mo></mrow><annotation encoding="application/x-tex">\Sigma\llbracket s \rrbracket</annotation></semantics></math><code>!(Nil)</code></td>
+<td style="text-align: left;">a send: mint a token</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>{% P %}[s]</code></td>
+<td
+style="text-align: left;"><code>for(t &lt;- </code><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Σ</mi><mo stretchy="false" form="prefix">⟦</mo><mi>s</mi><mo stretchy="false" form="postfix">⟧</mo></mrow><annotation encoding="application/x-tex">\Sigma\llbracket s \rrbracket</annotation></semantics></math><code>){*t | P}</code></td>
+<td style="text-align: left;">a receipt: run <code>P</code> once a token
+arrives</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>That is the entire mechanic. Spending fuel <em>is</em> a
+communication: the gate consumes one token, releases its payload, and
+then <code>P</code> runs. If no token is available on the signature
+channel, the gate parks forever and <code>P</code> never runs — and that
+is what metering means here. A budget is a stack of nested sends, and
+its depth is how many operations it funds.</p>
+<p>Two things follow that a developer should notice.</p>
+<p>First, metering is not a virtual-machine feature bolted onto a
+language. It is a program <em>in</em> the language, and the transpiler’s
+job is only to write it for you. Anything true of unmetered <span class="flang">f1r3<span class="fg">|@</span>ng</span> is true of metered <span class="flang">f1r3<span class="fg">|@</span>ng</span>.</p>
+<p>Second, it composes with Claim <a href="#claim:witness"
+data-reference-type="ref" data-reference="claim:witness">3</a> in a
+satisfying way. A communication that is not funded is a communication
+that does not happen, and it is indistinguishable from a communication
+whose guard failed. Both are non-events. There is no separate failure
+mode for running out of budget, no exception, and nothing to unwind —
+which is exactly the property that lets the forager’s death be modelled
+as “it stops” rather than as an error path.</p>
+<p>The repository [<a href="#ref-f1r3node">49</a>]
+ships a worked demonstration of this at scale: a supply chain in which
+factories produce, carriers ship, sellers wholesale and buyers retail,
+with money and inventory both conserved, and every single operation
+gated by a token. It is the best available answer to “show me this doing
+something real”.</p>
+<h2 data-number="3.13" id="sec:status"><span
+class="header-section-number">3.13</span> What actually runs</h2>
+<p>Honesty about status is more useful to a developer than enthusiasm,
+so the table below separates three things a reader has every right to
+keep apart: <em>specified</em> means the surface is frozen and written
+down; <em>implemented</em> means there is code a reader can run;
+<em>planned</em> means neither yet.</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Capability</strong></th>
+<th style="text-align: left;"><strong>Status</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>Theory</code> declarations: types,
+terms, equations, rewrites; generated parser, printer, substitution,
+rewrite engine</td>
+<td style="text-align: left;">implemented, in the reference elaborator
+and in <code>mettail-rust</code> [<a href="#ref-mettailrust">48</a>], with language definitions shipped for
+lambda, ambient, the <span class="sans-serif">rho</span> calculus and a
+calculator</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">The fourth rung (§<a href="#sec:reuse"
+data-reference-type="ref" data-reference="sec:reuse">3.6</a>, §<a
+href="#sec:module" data-reference-type="ref"
+data-reference="sec:module">3.7</a>): theory parameters,
+<code>Types</code>, <code>Exports</code>, <code>Replacements</code>, the
+algebra of theories, and pushout sharing (§<a href="#sec:sharing"
+data-reference-type="ref" data-reference="sec:sharing">3.8</a>)</td>
+<td style="text-align: left;">implemented, as the
+<code>mettail-elab</code> crate on the
+<code>feature/module-syntax</code> branch of
+<code>f1r3node-rust</code> [<a href="#ref-modulesyntax">50</a>]. Dependency-free, with the
+universal-algebra tower and the <span class="sans-serif">rho</span>
+calculus as its worked corpus and a corpus of negative cases for the
+diagnostics of §<a href="#sec:sharing" data-reference-type="ref"
+data-reference="sec:sharing">3.8</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">The same surface in the <em>live</em>
+parser</td>
+<td style="text-align: left;"><em>not yet</em>. The grammar delta for
+the tree-sitter parser sits beside the elaborator as a patch rather than
+an applied change, and the elaborator is not yet on the node’s workspace
+build. This is the next step, and it is the honest boundary of this
+section</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>Module</code>, and imports by
+URL</td>
+<td style="text-align: left;">specified and implemented in the
+elaborator; resolution is a compile-time step in the client toolchain,
+so a node never performs it</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>where</code> guards on receipts, and
+<code>where</code> guards on <code>match</code> cases with
+fall-through</td>
+<td style="text-align: left;">implemented on the
+<code>cost-accounting-transpiler</code> branch of
+<code>f1r3node-rust</code> [<a href="#ref-f1r3node">49</a>], with runnable examples and compile
+tests</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cost accounting: minting, gates, compound
+signatures, budget stacks</td>
+<td style="text-align: left;">implemented on the same branch, with a
+transpiler and a documented demo</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Arity-changing replacements (the bag in
+<code>ParMonoid</code>)</td>
+<td style="text-align: left;">accepted by the elaborator, <em>not</em>
+checked. Replacing a binary constructor by a collection-valued one
+leaves the inherited binary equations written over a constructor that no
+longer has that shape. Either replacements should be arity-preserving,
+or there should be a way to say that an inherited equation has become
+structural. Open</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Conditions drawn from the <em>generated
+logic</em> (§<a href="#sec:logic" data-reference-type="ref"
+data-reference="sec:logic">4</a>) rather than from ordinary boolean
+expressions</td>
+<td style="text-align: left;">planned. The guard slot exists and is
+evaluated before commit, but a condition today is an ordinary boolean
+expression; the structural and behavioural connectives are specified in
+the research notes, and connecting an elaborated theory to the guard is
+what would close the gap</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Graded conditions and simulation (§<a
+href="#sec:graded" data-reference-type="ref"
+data-reference="sec:graded">5</a>)</td>
+<td style="text-align: left;">implemented as a separate simulator
+crate [<a href="#ref-WeightedGSLT">41</a>], with the
+stochastic and quantum readings both built and tested; not part of the
+node’s execution path, by design (§<a href="#sec:simnotinterp"
+data-reference-type="ref" data-reference="sec:simnotinterp">10</a>)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The condition language a developer can write <em>today</em> is
+boolean expressions over the variables the patterns bound —
+<code>x &gt; 0</code>, and so on. Everything in the next section is
+about what that slot is going to hold, and why the choice is more
+interesting than it looks.</p>
+<h1 data-number="4" id="sec:logic"><span
+class="header-section-number">4</span> Widening one: what a condition
+can see</h1>
+<h2 data-number="4.1"
+id="the-condition-language-is-generated-not-designed"><span
+class="header-section-number">4.1</span> The condition language is
+generated, not designed</h2>
+<p>Here is the claim of this section, stated first so the rest can be
+read as support for it.</p>
+<p>The vocabulary available in a <code>where</code> clause is not a
+fixed list of built-in predicates, and nobody sat down and designed it.
+It is <em>constructed from the language definition</em> that types the
+channel. Change the language definition, and the condition language
+changes with it, automatically and in a specified way.</p>
+<p>That is worth dwelling on because the alternative — a fixed predicate
+library — is what every other system does, and its failure mode is
+familiar. A query language ships with the predicates its designers
+anticipated. When a developer needs one that was not anticipated, the
+escape hatch is a user-defined function, which is opaque to the
+optimiser, the index, and the type system. Generated conditions have no
+escape hatch because they have no fixed list to escape from.</p>
+<p>A generated condition language has three components, and the account
+of why it has exactly these three is a realizability argument set out
+elsewhere [<a href="#ref-Zeus">31</a>]. Two of them
+come from the language definition and one is a choice.</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Component</strong></th>
+<th style="text-align: left;"><strong>Where it comes from</strong></th>
+<th style="text-align: left;"><strong>What it lets you say</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">structural</td>
+<td style="text-align: left;">one connective per term constructor in the
+<code>terms</code> block</td>
+<td style="text-align: left;">“this term is a send on a channel
+satisfying …”, “this splits into two parts sharing nothing”</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">behavioural</td>
+<td style="text-align: left;">one modality per rule in the
+<code>rewrites</code> block, and per position it could fire at</td>
+<td style="text-align: left;">“after one step of <em>this</em> rule,
+…holds”</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">collection</td>
+<td style="text-align: left;"><strong>a choice</strong>: what container
+holds the witnesses</td>
+<td style="text-align: left;">which logical connectives exist at all,
+and how they behave</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 data-number="4.2"
+id="structural-connectives-pattern-matching-that-can-talk-about-namespaces"><span
+class="header-section-number">4.2</span> Structural connectives: pattern
+matching that can talk about namespaces</h2>
+<p>The structural component is the easiest to get a feel for, because it
+is recognisably a generalisation of pattern matching.</p>
+<p>Every constructor in the <code>terms</code> block yields a
+connective. If the theory has
+<code>POutput . n:Name, q:Proc |- n "!" "(" q ")" : Proc</code>, the
+logic gets a way to say “a send, on a name satisfying
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>φ</mi><annotation encoding="application/x-tex">\varphi</annotation></semantics></math>,
+of a term satisfying
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ψ</mi><annotation encoding="application/x-tex">\psi</annotation></semantics></math>”.
+Nested, these compose into descriptions of arbitrary shape.</p>
+<p>Two of the generated connectives are worth naming because they do
+things ordinary patterns cannot.</p>
+<h4 data-number="4.2.0.1" id="separating-conjunction."><span
+class="header-section-number">4.2.0.1</span> Separating
+conjunction.</h4>
+<p>Because parallel composition is associative-commutative — an
+equation, from rung two — the connective it generates is not ordinary
+conjunction but a <em>separating</em> one:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>φ</mi><mo>∣</mo><mi>ψ</mi></mrow><annotation encoding="application/x-tex">\varphi \mid
+\psi</annotation></semantics></math> holds of a term that splits into
+two parts, one satisfying
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>φ</mi><annotation encoding="application/x-tex">\varphi</annotation></semantics></math>
+and one satisfying
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ψ</mi><annotation encoding="application/x-tex">\psi</annotation></semantics></math>,
+<em>with the split being a real partition</em>. This is the same idea as
+separation logic’s separating conjunction [<a href="#ref-Reynolds02">19</a>], and the same connective the spatial
+logics for concurrency carry [<a href="#ref-CairesCardelli03">4</a>], and it is what lets a condition
+say “there are two of these, and they are not the same one” — a sentence
+ordinary conjunction cannot express.</p>
+<h4 data-number="4.2.0.2" id="the-name-predicate."><span
+class="header-section-number">4.2.0.2</span> The name predicate.</h4>
+<p>Because names are quoted terms, a condition can descend from a name
+into the term it quotes [<a href="#ref-NamespaceLogic">47</a>]:
+<code>@</code><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>φ</mi><annotation encoding="application/x-tex">\varphi</annotation></semantics></math>
+holds of a name whose quoted process satisfies
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>φ</mi><annotation encoding="application/x-tex">\varphi</annotation></semantics></math>.
+In developer terms, this means a condition can talk about
+<em>namespaces</em> — about the shape of the addresses involved, not
+just the payloads. The forager’s belief channel and the specimen channel
+are distinguishable to a condition by what kind of name they are, which
+is how one describes a region of the address space rather than
+enumerating it.</p>
+<h2 data-number="4.3"
+id="behavioural-connectives-asking-about-the-future"><span
+class="header-section-number">4.3</span> Behavioural connectives: asking
+about the future</h2>
+<p>The behavioural component is the one with no analogue in a query
+language. For each rewrite rule, and each position in the term where
+that rule could fire, the logic gets a modality
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">⟨</mo><mi>K</mi><mo stretchy="false" form="postfix">⟩</mo><mi>φ</mi></mrow><annotation encoding="application/x-tex">\langle K \rangle \varphi</annotation></semantics></math>
+— a refinement of the modality of Hennessy–Milner logic [<a href="#ref-HM85">13</a>], indexed by rewrite rule and
+position rather than by action [<a href="#ref-Hypercube">42</a>] — read: <em>there is a step of this rule
+at this position, after which
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>φ</mi><annotation encoding="application/x-tex">\varphi</annotation></semantics></math>
+holds</em>.</p>
+<p>The forager’s use for this is immediate. <code>Chi(spec)</code> as
+written is a structural question — does this specimen <em>look</em> a
+certain way. A behavioural question is different: does this specimen, if
+poked, <em>do</em> a certain thing. Both are legitimate hypotheses. They
+are priced very differently.</p>
+<div id="rem:readordrive" class="remark">
+<p><em>Remark 4.1</em> (Read or drive). There are two ways to learn any
+property of the environment. <em>Read</em> it, if the environment has
+already computed the property into visible structure — and pay only for
+looking. Or <em>drive</em> it, by making the environment take a step and
+observing what happens — and pay for the step. The structural
+connectives price the first, the behavioural connectives price the
+second, and which is cheaper is a fact about the environment rather than
+about the observer.</p>
+</div>
+<p>Remark <a href="#rem:peek" data-reference-type="ref"
+data-reference="rem:peek">1</a> now acquires a sharper form. Driving
+means acting, and acting on the thing you are trying to observe changes
+it. A system that wants perception to be non-disturbing must arrange
+that its observational apparatus uses peeks and its interactions use
+linear receipts — and the two must sit in different namespaces, so that
+a formula meant to look cannot accidentally claim. In the forager,
+reading the specimen’s structure and opening the specimen must be
+different names, or the assessment eats the subject.</p>
+<h2 data-number="4.4" id="the-collection-component-is-a-dial"><span
+class="header-section-number">4.4</span> The collection component is a
+dial</h2>
+<p>The third component is a choice, and it is the most consequential one
+in this section. A logic needs somewhere to put its witnesses — the
+things that make a formula true — and the container chosen determines
+which logical operations even exist.</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Container</strong></th>
+<th style="text-align: left;"><strong>Logic you get</strong></th>
+<th style="text-align: left;"><strong>What the <code>where</code> can
+now ask</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">sets (powerset)</td>
+<td style="text-align: left;">the usual Boolean operations: and, or,
+not, implication</td>
+<td style="text-align: left;">“does this hold?” — the familiar case, and
+what the implementation does today</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">quantales [<a href="#ref-Rosenthal90">21</a>, <a href="#ref-Yetter90">28</a>]</td>
+<td style="text-align: left;">the linear connectives [<a href="#ref-Girard87">10</a>]</td>
+<td style="text-align: left;">“is there <em>exactly one</em> of these,
+to be consumed once?” — resource questions, where using a witness spends
+it</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">join semi-lattices</td>
+<td style="text-align: left;">coalition logic [<a href="#ref-Pauly02">22</a>, <a href="#ref-GabbayLosa">7</a>]</td>
+<td style="text-align: left;">“does some group of these participants
+agree?” — quorum questions, asked about a population without running a
+protocol</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The distinction between the first two rows is the distinction between
+counting and noticing. A Boolean condition, asked whether there are
+three red items, answers a question about presence: there <em>are</em>
+red ones. It cannot count them, because in a set two witnesses of the
+same kind collapse into one. A linear condition keeps them apart,
+because in a quantale they do not collapse. If you have ever wanted a
+query that says “at least three distinct matching rows, and consuming
+one of them consumes it for everyone”, the second row is where that
+lives.</p>
+<p>The third row is stranger and more useful than it sounds. Coalition
+logic asks about groups: is there a set of participants such that,
+together, they can bring something about. Read as a condition on a
+running population — other programs in the environment — it asks whether
+a quorum has formed [<a href="#ref-HerdNote">37</a>]. The forager can use this to ask whether
+the specimens around it are of a kind that behaves as a group, without
+participating in any protocol they might be running.</p>
+<div class="remark">
+<p><em>Remark 4.2</em> (Same question, three sights). The reason to
+present this as a dial rather than three logics is that the question
+being asked is the same question, and the theory being asked about is
+the same theory. The structural and behavioural connectives are
+unchanged. What changes is only what a witness is, and therefore what
+conjunction and disjunction do to witnesses. This is why the arrangement
+is not ad hoc: a developer is not choosing among logics somebody
+designed, but among <em>observation disciplines</em> over a structure
+that was already there [<a href="#ref-ObsDisc">32</a>].</p>
+</div>
+<h2 data-number="4.5" id="what-the-dial-costs"><span
+class="header-section-number">4.5</span> What the dial costs</h2>
+<p>Turning the dial up is not free, and the price is worth stating in
+the terms a developer cares about.</p>
+<h4 data-number="4.5.0.1"
+id="a-more-expressive-condition-may-not-terminate."><span
+class="header-section-number">4.5.0.1</span> A more expressive condition
+may not terminate.</h4>
+<p>The behavioural modality asks about steps, and a term can step
+forever. Fixed points over the modality — “it keeps being able to do
+this” — are expressive and unbounded. The mitigation is that evaluating
+a guard is metered like everything else: a budget bounds the check, and
+an unfunded check is a non-event by §<a href="#sec:cost"
+data-reference-type="ref" data-reference="sec:cost">3.12</a>, so it
+fails safe.</p>
+<h4 data-number="4.5.0.2"
+id="restricting-to-make-checking-terminate-loses-something-real."><span
+class="header-section-number">4.5.0.2</span> Restricting to make
+checking terminate loses something real.</h4>
+<p>A developer who wants guards that always answer can restrict to a
+fragment — fewer connectives, or a smaller slice of the theory. That
+works. What is surrendered is <em>adequacy</em>: the property that the
+logic can distinguish any two programs that actually behave differently.
+In general, a logic whose model checking always terminates cannot be
+adequate for a Turing-complete theory. This is not a defect of the
+construction; it is the shape of the trade, and the dial exists
+precisely so it can be made deliberately rather than by accident.</p>
+<h4 data-number="4.5.0.3"
+id="adequacy-is-a-property-of-the-target-not-of-the-generator."><span
+class="header-section-number">4.5.0.3</span> Adequacy is a property of
+the target, not of the generator.</h4>
+<p>It is tempting to assume that a machine-generated logic comes with a
+guarantee. It does not, and it should not: whether the generated logic
+is adequate depends on which connectives were asked for. Without
+something like a negation and a conjunction, it will not be. A generated
+<em>type system</em>, for instance, is generated by the same family of
+algorithms and is not expected to be adequate at all [<a href="#ref-Hypercube">42</a>, <a href="#ref-GSLTintro">30</a>].</p>
+<h2 data-number="4.6" id="the-foragers-ladder"><span
+class="header-section-number">4.6</span> The forager’s ladder</h2>
+<p>Return to the running example. <code>Chi(spec)</code> was a
+placeholder for one hypothesis. The dial says there is a whole ladder of
+possible hypotheses, from cheap structural ones to expensive behavioural
+ones, and the forager can afford to sit anywhere on it.</p>
+<p>That is not a metaphor: it has been measured. In a companion
+study [<a href="#ref-GameNote">39</a>], a learner of
+exactly this shape was equipped with a ladder of hypotheses expressed as
+<code>where</code> clauses, each priced by the depth of the formula it
+installs, and run to exhaustion against a fixed environment.</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Measurement</strong></th>
+<th style="text-align: left;"><strong>What it says</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">The non-modal rungs delivered
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>92.3</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">92.3\%</annotation></semantics></math>
+of the total gain for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>34.3</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">34.3\%</annotation></semantics></math>
+of the total cost</td>
+<td style="text-align: left;">structural sight is the bargain;
+behavioural sight is the luxury</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">The single best purchase on the whole
+ladder was a <em>name-level</em> predicate at modal depth zero</td>
+<td style="text-align: left;">namespaces are cheap to look at and highly
+informative</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">The rung that quantified over all replies
+to all moves was the worst purchase measured</td>
+<td style="text-align: left;">alternating quantification over the future
+is where cost explodes</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">A learner holding the <em>complete,
+correct</em> theory was dominated by a learner holding a cheaper wrong
+one</td>
+<td style="text-align: left;">truth buys safety, not yield; and the
+environment, not the learner, decides whether truth is affordable</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The last row is the one to carry forward. It says that the right
+position on the dial is not a property of the problem, and certainly not
+a matter of rigour. It is an economic question about the environment the
+program is deployed into, and it is answerable — because both the sight
+and the acting are priced in the same currency.</p>
+<h1 data-number="5" id="sec:graded"><span
+class="header-section-number">5</span> Widening two: when the condition
+stops answering yes or no</h1>
+<h2 data-number="5.1" id="the-move"><span
+class="header-section-number">5.1</span> The move</h2>
+<p>A guard returns a truth value, and the communication fires or does
+not. That is one choice, not the only one. The second widening is to let
+a condition return a value in some other algebra — a probability, a
+rate, a cost, a complex amplitude — and to interpret that value as
+<em>how much</em> this candidate happens rather than <em>whether</em> it
+happens.</p>
+<p>Before anything else, the reassurance a developer needs:</p>
+<div id="prop:cons" class="proposition">
+<p><strong>Proposition 5.1</strong> (Conservativity). <em>When the value
+algebra is the Booleans, a graded <code>where</code> clause is exactly
+the <code>where</code> clause of §<a href="#sec:cfl"
+data-reference-type="ref" data-reference="sec:cfl">2</a>. Nothing about
+existing programs changes, and no existing program acquires a new
+meaning.</em></p>
+</div>
+<p>So this is an extension in the strict sense. A developer who never
+grades a condition never encounters any of what follows. A developer who
+grades one gets something that turns out to be much larger than a
+weighted choice.</p>
+<h2 data-number="5.2" id="what-a-value-algebra-has-to-supply"><span
+class="header-section-number">5.2</span> What a value algebra has to
+supply</h2>
+<p>Not every set of values will do. The condition language has
+conjunction and disjunction in it, so whatever the values are, there
+must be an operation to interpret each. The requirement is mild: a
+commutative semiring [<a href="#ref-GradedWhere">33</a>]. Multiplication
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>⊗</mo><annotation encoding="application/x-tex">\otimes</annotation></semantics></math>
+interprets conjunction, addition
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>⊕</mo><annotation encoding="application/x-tex">\oplus</annotation></semantics></math>
+interprets disjunction, and the units behave as true and false do.</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Values</strong></th>
+<th
+style="text-align: left;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>⊗</mo><annotation encoding="application/x-tex">\otimes</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>⊕</mo><annotation encoding="application/x-tex">\oplus</annotation></semantics></math></strong></th>
+<th style="text-align: left;"><strong>A condition means</strong></th>
+<th style="text-align: left;"><strong>Running the program
+means</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td
+style="text-align: left;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝔹</mi><annotation encoding="application/x-tex">\mathbb{B}</annotation></semantics></math></td>
+<td style="text-align: left;">and, or</td>
+<td style="text-align: left;">a guard</td>
+<td style="text-align: left;">executing, as today</td>
+</tr>
+<tr class="even">
+<td
+style="text-align: left;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ℝ</mi><mrow><mo>≥</mo><mn>0</mn></mrow></msub><annotation encoding="application/x-tex">\mathbb{R}_{\geq 0}</annotation></semantics></math></td>
+<td
+style="text-align: left;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>+</mo><annotation encoding="application/x-tex">+</annotation></semantics></math></td>
+<td style="text-align: left;">a rate or propensity</td>
+<td style="text-align: left;">a stochastic simulation</td>
+</tr>
+<tr class="odd">
+<td
+style="text-align: left;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0,1]</annotation></semantics></math>
+with PLN values</td>
+<td
+style="text-align: left;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>+</mo><annotation encoding="application/x-tex">+</annotation></semantics></math>
+on the power
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">sc</annotation></semantics></math></td>
+<td style="text-align: left;">a graded belief</td>
+<td style="text-align: left;">inference driving execution</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Viterbi
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mo>max</mo><mo>,</mo><mo>×</mo><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(\max,\times)</annotation></semantics></math></td>
+<td
+style="text-align: left;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>max</mo><annotation encoding="application/x-tex">\max</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math></td>
+<td style="text-align: left;">the best explanation</td>
+<td style="text-align: left;">finding the most likely path</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">tropical
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mo>min</mo><mo>,</mo><mo>+</mo><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(\min,+)</annotation></semantics></math></td>
+<td
+style="text-align: left;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>min</mo><annotation encoding="application/x-tex">\min</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>+</mo><annotation encoding="application/x-tex">+</annotation></semantics></math></td>
+<td style="text-align: left;">a cost</td>
+<td style="text-align: left;">finding the cheapest path</td>
+</tr>
+<tr class="even">
+<td
+style="text-align: left;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ℂ</mi><annotation encoding="application/x-tex">\mathbb{C}</annotation></semantics></math></td>
+<td
+style="text-align: left;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>+</mo><annotation encoding="application/x-tex">+</annotation></semantics></math></td>
+<td style="text-align: left;">an amplitude</td>
+<td style="text-align: left;">a quantum simulation</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Which value algebra a program is read in is not merely a choice of
+numerics: it fixes how much of the non-determinism a resolver has to
+decide, and that question has a precise hierarchy behind it [<a href="#ref-ChoiceFormulae">36</a>]. One casualty is
+worth naming immediately, because it surprises people. Negation does not
+survive. Over
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0,1]</annotation></semantics></math>
+the map
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>↦</mo><mn>1</mn><mo>−</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">x \mapsto 1-x</annotation></semantics></math>
+behaves well enough, but over the complex numbers there is no canonical
+negation and De Morgan fails. The practical consequence is that the
+design keeps two sorts of formula: a <em>crisp</em> sort with the full
+Boolean structure, used for gating, and a <em>graded</em> sort with a
+semiring only, used for weighting. A <code>where</code> clause keeps its
+old job and gains a new slot.</p>
+<h2 data-number="5.3" id="the-guard-becomes-a-weight"><span
+class="header-section-number">5.3</span> The guard becomes a weight</h2>
+<p>Recall candidates from §<a href="#sec:transaction"
+data-reference-type="ref" data-reference="sec:transaction">2.7</a>: for
+a comprehension with data available, each way of assigning data to
+patterns is a candidate. In the crisp setting the condition is evaluated
+per candidate and admits or refuses it. In the graded setting the
+condition is evaluated per candidate and <em>scores</em> it.</p>
+<p>That is the entire mechanism, and three worthwhile things fall out of
+it without further work.</p>
+<h4 data-number="5.3.0.1"
+id="the-propensity-is-the-formulas-value-and-formulas-move."><span
+class="header-section-number">5.3.0.1</span> The propensity is the
+formula’s value, and formulas move.</h4>
+<p>A crisp guard is a fixed policy: it fires on the same specimens
+forever, because the formula does not change. A graded guard’s behaviour
+is the formula’s <em>value</em>, evaluated against the current state —
+and the current state includes whatever the program has learned. Nothing
+needs to be scheduled.</p>
+<h4 data-number="5.3.0.2" id="weight-tables-are-unnecessary."><span
+class="header-section-number">5.3.0.2</span> Weight tables are
+unnecessary.</h4>
+<p>A common design for stochastic execution [<a href="#ref-WeightedGSLT">41</a>] attaches a table of rates to each
+rule, keyed by conditions, and then requires those conditions to
+partition the space so that lookup is single-valued. A graded clause
+needs none of that: a formula has one value, so single-valuedness is
+free, and overlapping conditions are simply fine.</p>
+<h4 data-number="5.3.0.3" id="plasticity-is-free."><span
+class="header-section-number">5.3.0.3</span> Plasticity is free.</h4>
+<p>Because the clause is evaluated against the current term, weights
+that change during execution require no update mechanism. The weight is
+not stored; it is computed.</p>
+<h2 data-number="5.4" id="three-readings-of-one-program"><span
+class="header-section-number">5.4</span> Three readings of one
+program</h2>
+<p>Here is where the section earns its title. The same program text,
+under three different value algebras, is three different kinds of
+artefact.</p>
+<h4 data-number="5.4.0.1" id="booleans-a-state-transition."><span
+class="header-section-number">5.4.0.1</span> Booleans: a state
+transition.</h4>
+<p>The program is what it has been all along — code running in a node,
+manipulating state, committing transactions. Programming in the
+small.</p>
+<h4 data-number="5.4.0.2"
+id="non-negative-reals-a-stochastic-simulation."><span
+class="header-section-number">5.4.0.2</span> Non-negative reals: a
+stochastic simulation.</h4>
+<p>Each candidate carries a rate. The total rate at a configuration
+determines how long the system waits and which step it takes; this is
+the standard Gillespie construction [<a href="#ref-Gillespie77">9</a>], and it turns the program into a
+generator of trajectories — the same move that took the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>π</mi><annotation encoding="application/x-tex">\pi</annotation></semantics></math>-calculus
+to the stochastic
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>π</mi><annotation encoding="application/x-tex">\pi</annotation></semantics></math>-calculus
+and to SPiM [<a href="#ref-Priami95">17</a>, <a href="#ref-PhillipsCardelli07">18</a>], and that the weighted
+reading of a language definition generalises [<a href="#ref-WeightedGSLT">41</a>]. Running it many times gives you the
+distribution of outcomes rather than one outcome. Programming in the
+large: the subject is no longer this program’s state but the behaviour
+of a <em>population</em> of them.</p>
+<h4 data-number="5.4.0.3"
+id="complex-numbers-a-quantum-simulation."><span
+class="header-section-number">5.4.0.3</span> Complex numbers: a quantum
+simulation.</h4>
+<p>Each candidate carries an amplitude [<a href="#ref-GWQuantum">34</a>], and candidates that reach the same
+outcome have their amplitudes added before magnitudes are taken — which
+is to say, they interfere. Two branches that are individually possible
+can cancel — the effect Shor’s algorithm is built out of [<a href="#ref-Shor97">23</a>]. A developer’s summary:
+disjunction stops being monotone, and a false disjunction with true
+disjuncts becomes expressible.</p>
+<div id="sec:simnotinterp" class="remark">
+<p><em>Remark 5.2</em> (The simulator is not the interpreter). This
+matters operationally and is easy to get wrong. The graded readings do
+not run inside the node. They are a separate execution path with its own
+state, running offline, whose output is a graph or an ensemble rather
+than a committed state change. That separation is what makes things
+affordable there that are not affordable in the node — exhaustive
+construction of the reachable graph, model checking, fixed points — and
+it is what keeps a consensus-critical execution path free of any of
+it.</p>
+</div>
+<h2 data-number="5.5"
+id="programming-in-the-small-programming-in-the-large"><span
+class="header-section-number">5.5</span> Programming in the small,
+programming in the large</h2>
+<p>The reason to care is not that a simulator exists. Simulators exist.
+The reason to care is that <em>it is the same program text</em>.</p>
+<p>The usual arrangement in industry is two artefacts: the system,
+written in one language by one team, and the model of the system,
+written in another language by another team, for capacity planning or
+risk or verification. The model is always a little wrong, it goes stale
+immediately, and the discrepancy is discovered in production.</p>
+<p>Here the model and the system are the same source. A developer writes
+a comprehension with a graded condition; under the node’s resolver it is
+a transaction, and under the simulator’s resolver it is a model of what
+a population of such transactions would do. There is no translation step
+in which fidelity is lost, because there is no translation step.</p>
+<p>The practical questions this makes askable, in the language the
+system is written in:</p>
+<ul>
+<li><p>If this contract is deployed a thousand times against that
+environment, what is the distribution of outcomes?</p></li>
+<li><p>Which of these two policies survives longer under a shift in the
+environment?</p></li>
+<li><p>Is there a configuration reachable from here that we would
+consider a failure, and how much would getting there cost an
+adversary?</p></li>
+</ul>
+<h2 data-number="5.6" id="the-forager-graded"><span
+class="header-section-number">5.6</span> The forager, graded</h2>
+<p>Now the running example, all the way through. The forager’s clause
+becomes:</p>
+<pre><code>new bel, prey, wall in {
+  bel!( (1, 0.5) ) |                    // (n, s): one unit of prior evidence
+
+  for( @(n,s) &lt;- bel ; @spec &lt;- prey  where  Chi(spec) * Pow(n,s) ) {
+    Break!(spec) | bel!( revise(n, s, spec) )
+  } |
+  for( @(n,s) &lt;- bel ; @spec &lt;- prey  where  g ) {
+    Graze!(*wall) | bel!( (n, s) )
+  }
+}</code></pre>
+<p><code>Chi(spec)</code> is the crisp structural predicate of §<a
+href="#sec:logic" data-reference-type="ref"
+data-reference="sec:logic">4</a>, entering the graded sort as an
+indicator. <code>Pow(n,s)</code> is a graded ground formula whose value
+is the PLN power
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>⋅</mo><mi>c</mi></mrow><annotation encoding="application/x-tex">s\cdot c</annotation></semantics></math>,
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>c</mi><mo>=</mo><mi>n</mi><mi>/</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>+</mo><mi>k</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">c= n/(n+k)</annotation></semantics></math>
+is confidence and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+is the learner’s scepticism [<a href="#ref-PLN">12</a>]. <code>*</code> is graded conjunction.
+<code>g</code> is a scalar: the value of grazing.</p>
+<p>Two comprehensions, each with a weight. The forager opens the
+specimen with propensity
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">sc</annotation></semantics></math>
+against the wall’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>.
+Everything below was measured by running exactly this.</p>
+<h4 data-number="5.6.0.1"
+id="the-bootstrap-trap-and-why-exploration-is-a-disjunct."><span
+class="header-section-number">5.6.0.1</span> The bootstrap trap, and why
+exploration is a disjunct.</h4>
+<p>A belief with no evidence has
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>c</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">c= 0</annotation></semantics></math>,
+hence power
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>,
+hence a clause value of zero, hence a receipt that never fires — so it
+never acquires evidence. Measured: a forager initialised with no prior
+evidence opens
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.00</mn><annotation encoding="application/x-tex">0.00</annotation></semantics></math>
+specimens across
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>400</mn><annotation encoding="application/x-tex">400</annotation></semantics></math>
+encounters and ends with exactly the grazing baseline, against
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>3543.7</mn><annotation encoding="application/x-tex">3543.7</annotation></semantics></math>
+for the same forager given one unit of prior evidence.</p>
+<p>The remedy is written in the clause language, not in a framework.
+Either the belief carries prior evidence
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mn>0</mn></msub><mo>≥</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n_0 \geq 1</annotation></semantics></math>,
+or the clause is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">w</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>,</mo><mi>s</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⊕</mo><mi>ε</mi></mrow><annotation encoding="application/x-tex">\mathrm{Pow}(n,s) \oplus\varepsilon</annotation></semantics></math>
+for a small scalar
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ε</mi><annotation encoding="application/x-tex">\varepsilon</annotation></semantics></math>.
+That second form is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ε</mi><annotation encoding="application/x-tex">\varepsilon</annotation></semantics></math>-greedy
+exploration, and it is a <em>disjunct</em>.</p>
+<h4 data-number="5.6.0.2" id="confidence-buys-variance-not-yield."><span
+class="header-section-number">5.6.0.2</span> Confidence buys variance,
+not yield.</h4>
+<p>Four foragers, two worlds,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>20</mn><mo>,</mo><mn>000</mn></mrow><annotation encoding="application/x-tex">20{,}000</annotation></semantics></math>
+lives each. In the benign world the crisp forager — which acts on a
+satisfied guard from its first encounter — has the <em>highest</em> mean
+terminal holdings,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>4084.7</mn><annotation encoding="application/x-tex">4084.7</annotation></semantics></math>,
+and the <em>lowest</em> survival,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.8501</mn><annotation encoding="application/x-tex">0.8501</annotation></semantics></math>.
+The graded forager has survival
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.9485</mn><annotation encoding="application/x-tex">0.9485</annotation></semantics></math>
+and holdings
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>3543.7</mn><annotation encoding="application/x-tex">3543.7</annotation></semantics></math>.
+That is the trade a mortal program actually faces, and a Boolean guard
+cannot express it.</p>
+<h4 data-number="5.6.0.3"
+id="a-boolean-guard-has-no-coordinate-in-which-to-record-disappointment."><span
+class="header-section-number">5.6.0.3</span> A Boolean guard has no
+coordinate in which to record disappointment.</h4>
+<p>In the hostile world, where opening is a net loss, the crisp forager
+survives
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.29</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">0.29\%</annotation></semantics></math>
+of the time. It cannot do otherwise: its policy <em>is</em> the formula,
+and the formula does not change. The graded forager’s policy is the
+formula’s value, which moves:</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">opening</th>
+<th
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math></th>
+<th
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math></th>
+<th style="text-align: right;">power</th>
+<th
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>Pr</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">open</mtext><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">\Pr[\text{open}]</annotation></semantics></math></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.7500</mn><annotation encoding="application/x-tex">0.7500</annotation></semantics></math></td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.3333</mn><annotation encoding="application/x-tex">0.3333</annotation></semantics></math></td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.2500</mn><annotation encoding="application/x-tex">0.2500</annotation></semantics></math></td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.3333</mn><annotation encoding="application/x-tex">0.3333</annotation></semantics></math></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.5000</mn><annotation encoding="application/x-tex">0.5000</annotation></semantics></math></td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.4286</mn><annotation encoding="application/x-tex">0.4286</annotation></semantics></math></td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.2143</mn><annotation encoding="application/x-tex">0.2143</annotation></semantics></math></td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.3000</mn><annotation encoding="application/x-tex">0.3000</annotation></semantics></math></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.3750</mn><annotation encoding="application/x-tex">0.3750</annotation></semantics></math></td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.5000</mn><annotation encoding="application/x-tex">0.5000</annotation></semantics></math></td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.1875</mn><annotation encoding="application/x-tex">0.1875</annotation></semantics></math></td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.2727</mn><annotation encoding="application/x-tex">0.2727</annotation></semantics></math></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">5</td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.2500</mn><annotation encoding="application/x-tex">0.2500</annotation></semantics></math></td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.6000</mn><annotation encoding="application/x-tex">0.6000</annotation></semantics></math></td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.1500</mn><annotation encoding="application/x-tex">0.1500</annotation></semantics></math></td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.2308</mn><annotation encoding="application/x-tex">0.2308</annotation></semantics></math></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Strength falls as decoys accumulate, confidence rises, the product
+falls, and with it the willingness to open. The forager learns to stop.
+Note that nothing in the clause is a schedule: early caution and late
+decisiveness are consequences of a coordinate of the truth value, not of
+a hyperparameter someone tuned.</p>
+<h4 data-number="5.6.0.4"
+id="your-where-clause-has-become-a-learning-rule."><span
+class="header-section-number">5.6.0.4</span> Your <code>where</code>
+clause has become a learning rule.</h4>
+<p>This is the point at which the exposition arrives somewhere a
+developer would not have predicted from §<a href="#sec:cfl"
+data-reference-type="ref" data-reference="sec:cfl">2</a>. In a
+one-dimensional grading, the revision step that updates the belief turns
+out to be a <em>natural gradient</em> step [<a href="#ref-Amari98">2</a>] on the underlying likelihood — to machine
+precision, verified over
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>20</mn><mo>,</mo><mn>000</mn></mrow><annotation encoding="application/x-tex">20{,}000</annotation></semantics></math>
+random instances at a worst discrepancy of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1.1</mn><mo>×</mo><msup><mn>10</mn><mrow><mo>−</mo><mn>16</mn></mrow></msup></mrow><annotation encoding="application/x-tex">1.1 \times 10^{-16}</annotation></semantics></math>.
+Better, it is an <em>implicit</em> step in the sense of stochastic
+approximation [<a href="#ref-RobbinsMonro51">20</a>], and therefore unconditionally
+stable: it cannot leave the valid range of values for any observation,
+where the explicit version can. The confidence coordinate is not a
+second belief. It is the metric with respect to which the first one is
+being learned.</p>
+<p>The score that the gradient is assembled from decomposes into
+contributions computable at each communication site, from what the site
+already has — which is the identity that makes policy-gradient methods
+implementable [<a href="#ref-Williams92">25</a>]
+and, here, makes the gradient a message rather than a backward pass. The
+developer’s version of that sentence: grading a condition gives you
+gradient descent in the small, correctly conditioned, without importing
+a learning framework and without a separate training loop. The learning
+rule is the clause.</p>
+<h2 data-number="5.7" id="what-is-settled-and-what-is-not"><span
+class="header-section-number">5.7</span> What is settled and what is
+not</h2>
+<p>Three honest boundaries, since the previous subsection was
+enthusiastic.</p>
+<h4 data-number="5.7.0.1"
+id="the-stochastic-reading-is-solid-the-quantum-reading-has-a-fence-around-it."><span
+class="header-section-number">5.7.0.1</span> The stochastic reading is
+solid; the quantum reading has a fence around it.</h4>
+<p>The complex-valued case is established for a restricted fragment —
+finite, contractive, staged — and not for the language as a whole. Two
+specific hazards sit behind that fence. Left unrestricted, the
+construction buys post-selection, and a language with free
+post-selection decides more than quantum computers do [<a href="#ref-Aaronson05">1</a>]. And the coherent
+branching this needs is quantum <em>control</em> rather than the
+architecture of the quantum process calculi, which keep the quantum
+state beside the process rather than in the branching [<a href="#ref-GayNagarajan05">8</a>, <a href="#ref-YingYuFeng14">29</a>, <a href="#ref-BadescuPanangaden15">3</a>].
+The research note that develops it [<a href="#ref-GWQuantum">34</a>] states its own boundary as: a finite,
+contractive, staged fragment of graded <span
+class="sans-serif">rho</span> admits a candidate quantum interpretation,
+and the extension to unrestricted reflective concurrency remains open.
+That fence is where it is for good reasons, and a developer should read
+the complex row of the table above as “there is a real construction here
+for circuit-shaped programs” rather than “<span class="flang">f1r3<span class="fg">|@</span>ng</span> is a quantum language”.</p>
+<h4 data-number="5.7.0.2"
+id="learning-under-a-moving-target-is-not-solved."><span
+class="header-section-number">5.7.0.2</span> Learning under a moving
+target is not solved.</h4>
+<p>The measured experiments include a regime shift, and under it every
+arm’s accuracy degrades in proportion to how much evidence it had
+accumulated. Accumulated confidence makes a learner rigid, and rigidity
+is exactly wrong when the world changes. This is a known gap, named as
+such in the companion note [<a href="#ref-GWPLN">35</a>], and it is the most consequential one.</p>
+<h4 data-number="5.7.0.3" id="two-searches-not-one."><span
+class="header-section-number">5.7.0.3</span> Two searches, not one.</h4>
+<p>Grading gives a gradient <em>within</em> a hypothesis — tuning the
+numbers in a clause. It does not give a gradient <em>between</em>
+hypotheses — changing which formula the clause contains. That second
+search is discrete and looks like recombination rather than
+descent [<a href="#ref-ComposeNote">40</a>]. The
+split between the two is not an engineering decision; it follows from
+the shape of the hypothesis space.</p>
+<h1 data-number="6" id="sec:close"><span
+class="header-section-number">6</span> Where this leaves a
+developer</h1>
+<h2 data-number="6.1" id="the-through-line-in-one-page"><span
+class="header-section-number">6.1</span> The through-line in one
+page</h2>
+<p>The exposition began at a place every reader already knew and moved
+by necessity rather than by exposition. It is worth collecting the
+steps, because each was forced by the one before.</p>
+<ol>
+<li><p>The comprehension <code>SELECT-FROM-WHERE</code> is what data
+access looks like, in every language that has one. It has no
+<code>DO</code>.</p></li>
+<li><p>LINQ exists to embed it in a host language so that a developer
+can finally express the <code>DO</code>. <span class="flang">f1r3<span class="fg">|@</span>ng</span> goes the rest of the way and builds
+the language around the comprehension:
+<code>for( ptrn &lt;- chan where cond )P</code>, with
+<code>chan!(Q)</code> as its dual.</p></li>
+<li><p>Making both the read and the write explicit turns a communication
+into a meeting, and the substitution the rule performs is the witness.
+Transactions become a property of the program text: a failed guard is
+not rolled back because nothing was consumed.</p></li>
+<li><p>That leaves the pattern and the condition unaccounted for, which
+forces a data definition sublanguage. <span class="flang">f1r3<span class="fg">|@</span>ng</span>’s <code>Theory</code> declaration
+supplies it in four rungs: grammar, equations, rewrites, parameters. The
+second rung holds all the invariants your type system cannot read; the
+third makes the data wiggle; the fourth makes a language definition
+something you can ship, import by address, and extend without
+copying.</p></li>
+<li><p>Because the fourth rung exists, a language definition composes
+like a module rather than like a file. Theories combine over shared
+ancestors, and the elaborator holds you to the claim: two things that
+arrived by different routes are two things, and if they share a name
+that is an error rather than an override.</p></li>
+<li><p>That structure subsumes MeTTa — rules are rewrites, atom spaces
+are channels — and adds the two things MeTTa lacks: an equational layer
+and a witnessed transaction.</p></li>
+<li><p>The condition language is generated from the language definition
+rather than designed. Choosing the container for witnesses turns a dial
+between Boolean, linear and coalition sight, and the choice is an
+economic one about the deployment environment rather than a matter of
+rigour.</p></li>
+<li><p>Grading the condition replaces the verdict with a value. At
+Booleans nothing changes; at the non-negative reals the program becomes
+a stochastic simulation of a population of itself; at the complex
+numbers, on a fenced fragment, a quantum one. Same text, two resolvers,
+no model drift.</p></li>
+<li><p>In the graded setting the forager’s guard is a learning rule, and
+the update is a correctly conditioned, unconditionally stable gradient
+step — arrived at without importing anything.</p></li>
+</ol>
+<h2 data-number="6.2" id="what-to-do-on-monday"><span
+class="header-section-number">6.2</span> What to do on Monday</h2>
+<p>For a developer who wants to touch this rather than read about it, in
+order of increasing commitment:</p>
+<ul>
+<li><p>Run the two guard examples — the receive guard and the
+<code>match</code> fall-through — on the
+<code>cost-accounting-transpiler</code> branch of
+<code>f1r3node-rust</code> [<a href="#ref-f1r3node">49</a>]. They are small, they compile, and they
+are covered by tests. Change the guard and watch what does and does not
+get consumed.</p></li>
+<li><p>Run the cost-accounting demonstration in the same directory. It
+is a supply chain with conserved money and conserved inventory in which
+every operation is gated by a token, and it is the best available answer
+to what metering feels like when it is a program rather than a runtime
+flag.</p></li>
+<li><p>Run the reference elaborator on its own corpus, on the branch
+that carries it [<a href="#ref-modulesyntax">50</a>]. It is dependency-free and builds in
+seconds. The instructive half of that corpus is the <code>bad/</code>
+directory: six modules that are wrong on purpose, each with the
+diagnostic it earns. Reading those is the fastest way to acquire the
+sharing-is-a-claim reflex of §<a href="#sec:sharing"
+data-reference-type="ref" data-reference="sec:sharing">3.8</a>.</p></li>
+<li><p>Write a <code>Theory</code> declaration for a data format you
+already own — ideally one whose type has an invariant currently
+maintained by a comment. Put the comment in the <code>Equations</code>
+block. That single exercise is the fastest way to feel the difference
+between rung one and rung two.</p></li>
+<li><p>Then, if the shape of the thing appeals, add a
+<code>Rewrites</code> block and discover that you have written a
+domain-specific language — and then take the part of it that was not
+specific to your domain, give it a parameter, and discover you have
+written two.</p></li>
+</ul>
+<h2 data-number="6.3" id="where-to-read-next"><span
+class="header-section-number">6.3</span> Where to read next</h2>
+<p>This note is deliberately the shallow end. The following are the deep
+ends, one line each.</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Note</strong></th>
+<th style="text-align: left;"><strong>What it gives you that this does
+not</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><em>Graph-Structured Lambda Theories: A
+Reference for the Working Developer</em> [<a href="#ref-GSLTintro">30</a>]</td>
+<td style="text-align: left;">the same material with the theory first:
+what a language definition <em>is</em>, the category it lives in, and
+the two monads for cost and history</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><em>Splitting the Mind of Zeus</em> [<a href="#ref-Zeus">31</a>]</td>
+<td style="text-align: left;">why a logic has exactly the three
+components of §<a href="#sec:logic" data-reference-type="ref"
+data-reference="sec:logic">4</a>, and where the container dial comes
+from</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><em>Observation Disciplines</em>
+(omnibus) [<a href="#ref-ObsDisc">32</a>]</td>
+<td style="text-align: left;">the full range of the dial worked through
+six disciplines, with measurements, and the argument that the
+disciplines compose but do not merge</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><em>Graded Where-Clauses</em> [<a href="#ref-GradedWhere">33</a>]</td>
+<td style="text-align: left;">the design and semantics of the graded
+slot, the resolution algebras, and the result that weight tables are a
+normal form of graded clauses</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><em>Races Decided by the Born
+Rule</em> [<a href="#ref-GWQuantum">34</a>]</td>
+<td style="text-align: left;">the complex-valued case in detail,
+including the fence around it</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><em>Graded Where-Clauses over the
+Reals</em> [<a href="#ref-GWPLN">35</a>]</td>
+<td style="text-align: left;">the one-dimensional case: the gradient,
+the metric, and the measured forager</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><em>The Mortal Scientist</em> [<a href="#ref-ScientistNote">38</a>]</td>
+<td style="text-align: left;">the framework the running example is a
+small instance of — learning as cost-accounted computation</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><em>Plausible Fiction on <span class="flang">f1r3<span class="fg">|@</span>ng</span></em> [<a href="#ref-PF">43</a>] and its priced companion [<a href="#ref-PricedPF">44</a>]</td>
+<td style="text-align: left;">the fourth rung under load: a dependently
+typed object language written as a <code>Theory</code>, and a second one
+that extends it by taking it as a parameter</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><em><span class="flang">f1r3<span class="fg">|@</span>ng</span> DDL and module system</em> [<a href="#ref-DDLPlan">45</a>]</td>
+<td style="text-align: left;">the normative surface — the decisions, the
+grammar of a theory expression, and the list of what is struck</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 data-number="6.4" id="a-closing-observation"><span
+class="header-section-number">6.4</span> A closing observation</h2>
+<p>There is a temptation, reading a note like this, to treat the last
+two sections as the interesting part and the first two as preliminaries.
+Your author would put it the other way round.</p>
+<p>The two widenings are widenings of one slot. That slot exists because
+the comprehension has a <code>WHERE</code> clause, and it has a
+<code>WHERE</code> clause because SQL had one in 1974 [<a href="#ref-ChamberlinBoyce74">5</a>]. Nothing was
+invented to accommodate generated logics or graded values; a place for
+them was already present in the shape every developer already uses, and
+had been sitting empty. What this note describes is mostly the
+consequence of taking that shape seriously enough to build a language
+around it rather than embedding it in one.</p>
+<p>The <code>DO</code> is the part LINQ went looking for. The rest of it
+is what you find when you keep going.</p>
+<ul class="bib">
+<li id="ref-Aaronson05"><span class="bibnum">[1]</span> S. Aaronson. Quantum computing, postselection, and probabilistic
+polynomial-time. <em>Proceedings of the Royal Society A</em>,
+461(2063):3473–3482, 2005.</li>
+<li id="ref-Amari98"><span class="bibnum">[2]</span> S.-I. Amari. Natural gradient works efficiently in learning.
+<em>Neural Computation</em>, 10(2):251–276, 1998.</li>
+<li id="ref-BadescuPanangaden15"><span class="bibnum">[3]</span> C. Badescu and P. Panangaden. Quantum alternation: prospects and
+problems. In <em>Proceedings of Quantum Physics and Logic (QPL)</em>,
+EPTCS, 2015. arXiv:1511.01567.</li>
+<li id="ref-CairesCardelli03"><span class="bibnum">[4]</span> L. Caires and L. Cardelli. A spatial logic for concurrency (part I).
+<em>Information and Computation</em>, 186(2):194–235, 2003.</li>
+<li id="ref-ChamberlinBoyce74"><span class="bibnum">[5]</span> D. D. Chamberlin and R. F. Boyce. SEQUEL: A structured English query
+language. In <em>Proceedings of the ACM SIGFIDET Workshop on Data
+Description, Access and Control</em>, pages 249–264, 1974.</li>
+<li id="ref-Codd70"><span class="bibnum">[6]</span> E. F. Codd. A relational model of data for large shared data banks.
+<em>Communications of the ACM</em>, 13(6):377–387, 1970.</li>
+<li id="ref-GabbayLosa"><span class="bibnum">[7]</span> M. J. Gabbay and G. Losa. Semitopology: distributed collaborative
+action via topology, algebra and logic. Manuscript, 2023.</li>
+<li id="ref-GayNagarajan05"><span class="bibnum">[8]</span> S. J. Gay and R. Nagarajan. Communicating quantum processes. In
+<em>Proceedings of the 32nd ACM SIGPLAN-SIGACT Symposium on Principles
+of Programming Languages (POPL)</em>, pages 145–157, 2005.</li>
+<li id="ref-Gillespie77"><span class="bibnum">[9]</span> D. T. Gillespie. Exact stochastic simulation of coupled chemical
+reactions. <em>The Journal of Physical Chemistry</em>, 81(25):2340–2361,
+1977.</li>
+<li id="ref-Girard87"><span class="bibnum">[10]</span> J.-Y. Girard. Linear logic. <em>Theoretical Computer Science</em>,
+50(1):1–101, 1987.</li>
+<li id="ref-Hyperon"><span class="bibnum">[11]</span> B. Goertzel et al. OpenCog Hyperon: a framework for AGI at the human
+level and beyond. Manuscript, SingularityNET, 2023.</li>
+<li id="ref-PLN"><span class="bibnum">[12]</span> B. Goertzel, M. Iklé, I. F. Goertzel, and A. Heljakka.
+<em>Probabilistic Logic Networks: A Comprehensive Framework for
+Uncertain Inference</em>. Springer, 2008.</li>
+<li id="ref-HM85"><span class="bibnum">[13]</span> M. Hennessy and R. Milner. Algebraic laws for nondeterminism and
+concurrency. <em>Journal of the ACM</em>, 32(1):137–161, 1985.</li>
+<li id="ref-LINQ"><span class="bibnum">[14]</span> E. Meijer, B. Beckman, and G. Bierman. LINQ: reconciling object,
+relations and XML in the .NET framework. In <em>Proceedings of the ACM
+SIGMOD International Conference on Management of Data</em>, page 706,
+2006.</li>
+<li id="ref-Milner92"><span class="bibnum">[15]</span> R. Milner. Functions as processes. <em>Mathematical Structures in
+Computer Science</em>, 2(2):119–141, 1992.</li>
+<li id="ref-Plotkin81"><span class="bibnum">[16]</span> G. D. Plotkin. A structural approach to operational semantics.
+Technical Report DAIMI FN-19, Aarhus University, 1981. Reprinted in
+<em>Journal of Logic and Algebraic Programming</em>, 60–61:17–139,
+2004.</li>
+<li id="ref-Priami95"><span class="bibnum">[17]</span> C. Priami. Stochastic
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>π</mi><annotation encoding="application/x-tex">\pi</annotation></semantics></math>-calculus.
+<em>The Computer Journal</em>, 38(7):578–589, 1995.</li>
+<li id="ref-PhillipsCardelli07"><span class="bibnum">[18]</span> A. Phillips and L. Cardelli. Efficient, correct simulation of
+biological processes in the stochastic
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>π</mi><annotation encoding="application/x-tex">\pi</annotation></semantics></math>-calculus.
+In <em>Computational Methods in Systems Biology (CMSB)</em>, LNCS 4695,
+pages 184–199, 2007.</li>
+<li id="ref-Reynolds02"><span class="bibnum">[19]</span> J. C. Reynolds. Separation logic: a logic for shared mutable data
+structures. In <em>Proceedings of the 17th IEEE Symposium on Logic in
+Computer Science (LICS)</em>, pages 55–74, 2002.</li>
+<li id="ref-RobbinsMonro51"><span class="bibnum">[20]</span> H. Robbins and S. Monro. A stochastic approximation method. <em>The
+Annals of Mathematical Statistics</em>, 22(3):400–407, 1951.</li>
+<li id="ref-Rosenthal90"><span class="bibnum">[21]</span> K. I. Rosenthal. <em>Quantales and Their Applications</em>. Pitman
+Research Notes in Mathematics 234. Longman, 1990.</li>
+<li id="ref-Pauly02"><span class="bibnum">[22]</span> M. Pauly. A modal logic for coalitional power in games. <em>Journal
+of Logic and Computation</em>, 12(1):149–166, 2002.</li>
+<li id="ref-Shor97"><span class="bibnum">[23]</span> P. W. Shor. Polynomial-time algorithms for prime factorization and
+discrete logarithms on a quantum computer. <em>SIAM Journal on
+Computing</em>, 26(5):1484–1509, 1997.</li>
+<li id="ref-Wadler87"><span class="bibnum">[24]</span> P. Wadler. List comprehensions. In S. L. Peyton Jones, <em>The
+Implementation of Functional Programming Languages</em>, chapter 7.
+Prentice Hall, 1987.</li>
+<li id="ref-Williams92"><span class="bibnum">[25]</span> R. J. Williams. Simple statistical gradient-following algorithms for
+connectionist reinforcement learning. <em>Machine Learning</em>,
+8(3–4):229–256, 1992.</li>
+<li id="ref-XQuery"><span class="bibnum">[26]</span> S. Boag, D. Chamberlin, M. F. Fernández, D. Florescu, J. Robie, and
+J. Siméon. XQuery 1.0: An XML query language. W3C Recommendation,
+2007.</li>
+<li id="ref-XQueryUpdate"><span class="bibnum">[27]</span> J. Robie, D. Chamberlin, M. Dyck, D. Florescu, J. Melton, and
+J. Siméon. XQuery Update Facility 1.0. W3C Recommendation, 2011.</li>
+<li id="ref-Yetter90"><span class="bibnum">[28]</span> D. N. Yetter. Quantales and (noncommutative) linear logic. <em>The
+Journal of Symbolic Logic</em>, 55(1):41–64, 1990.</li>
+<li id="ref-YingYuFeng14"><span class="bibnum">[29]</span> M. Ying, N. Yu, and Y. Feng. Alternation in quantum programming: from
+superposition of data to superposition of programs. arXiv:1402.5172,
+2014.</li>
+<li class="bib-note"><strong>F1R3FLY.io working notes.</strong> Unless otherwise stated,
+each of the notes below lives in the F1R3FLY.io
+<code>publications</code> repository, and the directory holding it is
+given so that it can be found. Several of them predate the name <span class="flang">f1r3<span class="fg">|@</span>ng</span> and speak of MeTTaIL, or of
+rholang 1.4. They are the same language.</li>
+<li id="ref-GSLTintro"><span class="bibnum">[30]</span> L. G. Meredith. Graph-structured lambda theories: a reference for the
+working developer. F1R3FLY.io working note, 2026.
+<code>GSLT-intro/</code>.</li>
+<li id="ref-Zeus"><span class="bibnum">[31]</span> L. G. Meredith. Splitting the mind of Zeus: packaging, splittings,
+and the three components of a logic. F1R3FLY.io working note, 2026.
+<code>on-the-nature-of-logic/</code>.</li>
+<li id="ref-ObsDisc"><span class="bibnum">[32]</span> L. G. Meredith. Observation disciplines: how logics are generated
+from term structure, and why graded where-clauses are the mortal
+scientist’s instrument. F1R3FLY.io working note (omnibus), 2026.
+<code>rho-mind/observation-disciplines/</code>.</li>
+<li id="ref-GradedWhere"><span class="bibnum">[33]</span> L. G. Meredith. Graded where-clauses: non-crisp truth values as the
+syntax of non-determinism resolution in the rho calculus. F1R3FLY.io
+working note, 2026. <code>fuzzyware/</code>.</li>
+<li id="ref-GWQuantum"><span class="bibnum">[34]</span> L. G. Meredith. Races decided by the Born rule. F1R3FLY.io working
+note, 2026. <code>fuzzyware/</code>.</li>
+<li id="ref-GWPLN"><span class="bibnum">[35]</span> L. G. Meredith. Graded where-clauses over the reals: one-dimensional
+grading as the mortal scientist’s gradient, and probabilistic logic as
+the metric that gradient requires. F1R3FLY.io working note, 2026.
+<code>fuzzyware/</code>.</li>
+<li id="ref-ChoiceFormulae"><span class="bibnum">[36]</span> L. G. Meredith. Choice principles as graded where-clauses: one
+programming paradigm at every altitude of the Weihrauch lattice.
+F1R3FLY.io working note, 2026. <code>choice-types/</code>.</li>
+<li id="ref-HerdNote"><span class="bibnum">[37]</span> L. G. Meredith. Reading the herd: coalition logic as a graded
+hypothesis language for populations of computations. F1R3FLY.io working
+note, 2026. <code>consensus-types/</code>.</li>
+<li id="ref-ScientistNote"><span class="bibnum">[38]</span> L. G. Meredith. The mortal scientist: learning as cost-accounted
+computation in a reflective higher-order calculus. F1R3FLY.io working
+note, 2026. <code>rho-life/</code>.</li>
+<li id="ref-GameNote"><span class="bibnum">[39]</span> L. G. Meredith. Learning to play. F1R3FLY.io working note, 2026.
+<code>rho-life/</code>.</li>
+<li id="ref-ComposeNote"><span class="bibnum">[40]</span> L. G. Meredith. Composing learners: populations as namespaces,
+parallel composition as the operator. F1R3FLY.io working note, 2026.
+<code>rho-life/</code>.</li>
+<li id="ref-WeightedGSLT"><span class="bibnum">[41]</span> L. G. Meredith. Weighted graph-structured lambda theories: stochastic
+and quantum execution for <span class="flang">f1r3<span class="fg">|@</span>ng</span>.
+F1R3FLY.io working note, second version, 2026.
+<code>rho-life/</code>.</li>
+<li id="ref-Hypercube"><span class="bibnum">[42]</span> M. Stay, L. G. Meredith, and J. B. Wells. Generating hypercubes of
+type systems. F1R3FLY.io working note, 2026.
+<code>drafts/Hypercube/</code>.</li>
+<li id="ref-PF"><span class="bibnum">[43]</span> L. G. Meredith. Plausible fiction on <span class="flang">f1r3<span class="fg">|@</span>ng</span>: a requirements and design document
+for a typed marketplace of programmatic intentions. F1R3FLY.io working
+note, in dialogue with D. Spivak (Topos Institute), 2026.
+<code>plausible-fiction/</code>.</li>
+<li id="ref-PricedPF"><span class="bibnum">[44]</span> L. G. Meredith. Priced plausible fiction: PJES combinators over the
+conditional demand tree. F1R3FLY.io working note, 2026.
+<code>plausible-fiction/</code>.</li>
+<li id="ref-DDLPlan"><span class="bibnum">[45]</span> L. G. Meredith. The data definition sublanguage and its module
+system: decisions, normative surface, and development plan. F1R3FLY.io
+working note, 19 August 2026, held under
+<code>module-syntax/documentation/</code> on the branch cited
+below [<a href="#ref-modulesyntax">50</a>].</li>
+<li id="ref-MR05"><span class="bibnum">[46]</span> L. G. Meredith and M. Radestock. A reflective higher-order calculus.
+<em>Electronic Notes in Theoretical Computer Science</em>, 141(5):49–67,
+2005.</li>
+<li id="ref-NamespaceLogic"><span class="bibnum">[47]</span> L. G. Meredith and M. Radestock. Namespace logic: a logic for a
+reflective higher-order calculus. In <em>Trustworthy Global
+Computing</em>, LNCS 3705, pages 353–369, 2005.</li>
+<li class="bib-note"><strong>Software.</strong></li>
+<li id="ref-mettailrust"><span class="bibnum">[48]</span> F1R3FLY.io. <code>mettail-rust</code>: the language-definition
+toolchain — generated parser, printer, substitution and rewrite engine —
+with definitions shipped for lambda, ambient, the <span
+class="sans-serif">rho</span> calculus and a calculator. <a
+href="https://github.com/F1R3FLY-io/mettail-rust"
+class="uri">https://github.com/F1R3FLY-io/mettail-rust</a>.</li>
+<li id="ref-f1r3node"><span class="bibnum">[49]</span> F1R3FLY.io. <code>f1r3node-rust</code>, branch
+<code>feature/cost-accounting-transpiler</code>: <code>where</code>
+guards, match guards, and the cost-accounting transpiler, with runnable
+examples under <code>examples/</code>. <a
+href="https://github.com/F1R3FLY-io/f1r3node-rust"
+class="uri">https://github.com/F1R3FLY-io/f1r3node-rust</a>.</li>
+<li id="ref-modulesyntax"><span class="bibnum">[50]</span> F1R3FLY.io. <code>f1r3node-rust</code>, branch
+<code>feature/module-syntax</code>: the <code>mettail-elab</code>
+reference elaborator for the <code>Module</code> and <code>Theory</code>
+surface, its worked corpus under <code>examples/modules/</code> and its
+negative corpus under <code>examples/modules/bad/</code>, together with
+the grammar delta for the parser. <a
+href="https://github.com/F1R3FLY-io/f1r3node-rust"
+class="uri">https://github.com/F1R3FLY-io/f1r3node-rust</a>.</li>
+</ul>
+
+</div>
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <img src="images/f1r3lang-logo-v1.svg" alt="">
+      <span class="footer-note">A <a href="https://f1r3fly.io" target="_blank" rel="noopener">F1R3FLY</a> language</span>
+    </div>
+    <span class="footer-copy">&copy; F1R3FLY INDUSTRIES, 2026. All Rights Reserved</span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

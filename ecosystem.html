@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecosystem — f1r3lang</title>
+  <meta name="description" content="The f1r3lang toolchain: the F1R3FLY node, editor support for VS Code, Emacs and JetBrains, the language server, Embers, and the community.">
+  <meta name="theme-color" content="#0A0A0A">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600;700&family=Source+Sans+3:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap">
+
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- deploy:begin (finalize.py — do not hand-edit) -->
+  <link rel="canonical" href="https://f1r3lang.ai/ecosystem.html">
+  <link rel="icon" href="/images/f1r3lang-logo-v1.svg" type="image/svg+xml">
+  <meta property="og:url" content="https://f1r3lang.ai/ecosystem.html">
+  <meta property="og:site_name" content="f1r3lang">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ecosystem">
+  <meta property="og:description" content="The f1r3lang toolchain: the F1R3FLY node, editor support for VS Code, Emacs and JetBrains, the language server, Embers, and the community.">
+  <!-- deploy:end -->
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <img src="images/f1r3lang-logo-v1.svg" alt="f1r3lang">
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">&#9776;</button>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="index.html">Home</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="language.html">The Language</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="get-started.html">Get Started</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="research.html">Research</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="ecosystem.html" aria-current="page">Ecosystem</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="https://github.com/F1R3FLY-io" target="_blank" rel="noopener">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="main">
+
+<header class="page-head">
+  <p class="eyebrow">Ecosystem</p>
+  <h1 class="section-header">The toolchain around the language</h1>
+  <hr class="section-rule">
+</header>
+
+<section class="section reveal" id="platform" style="border-top:none; padding-top:2.5rem;">
+  <h2 class="section-sub">Run it</h2>
+  <div class="card-grid" style="margin-top:0;">
+    <article class="card">
+      <h3>F1R3FLY node</h3>
+      <p>The execution layer f1r3lang runs on: pure-Rust node, RSpace tuple space, CBC Casper consensus. Docker images ship for standalone nodes and multi-validator shards.</p>
+      <p class="card-note"><a href="https://github.com/F1R3FLY-io/f1r3fly" target="_blank" rel="noopener">F1R3FLY-io/f1r3fly &rarr;</a></p>
+    </article>
+    <article class="card">
+      <h3>Rust interpreter</h3>
+      <p>The standalone language workspace — parser, tree-sitter grammar, semantic analysis, VM, and the <code class="inline">rhosh</code> shell for running f1r3lang without a chain.</p>
+      <p class="card-note"><a href="https://github.com/F1R3FLY-io/rholang-rs" target="_blank" rel="noopener">F1R3FLY-io/rholang-rs &rarr;</a></p>
+    </article>
+    <article class="card">
+      <h3>Embers</h3>
+      <p>The F1R3FLY blockchain API: typed Rust data rendered through templates into contracts, signed, and deployed over gRPC. How production applications ship.</p>
+      <p class="card-note">Part of the F1R3FLY platform</p>
+    </article>
+  </div>
+</section>
+
+<section class="section reveal" id="editors">
+  <h2 class="section-sub">Write it</h2>
+  <div class="card-grid" style="margin-top:0;">
+    <article class="card">
+      <h3>VS Code</h3>
+      <p>Syntax highlighting and language support for the editor most people already have open.</p>
+      <p class="card-note"><a href="https://github.com/F1R3FLY-io/rholang-vscode-client" target="_blank" rel="noopener">rholang-vscode-client &rarr;</a></p>
+    </article>
+    <article class="card">
+      <h3>Emacs</h3>
+      <p>A tree-sitter powered mode for the editor that outlives us all.</p>
+      <p class="card-note"><a href="https://github.com/F1R3FLY-io/rholang-emacs-client" target="_blank" rel="noopener">rholang-emacs-client &rarr;</a></p>
+    </article>
+    <article class="card">
+      <h3>JetBrains</h3>
+      <p>Plugin support for IntelliJ-family IDEs, built on the shared grammar.</p>
+      <p class="card-note"><a href="https://github.com/F1R3FLY-io/rholang-rs" target="_blank" rel="noopener">in rholang-rs &rarr;</a></p>
+    </article>
+    <article class="card">
+      <h3>Language server</h3>
+      <p>One LSP implementation behind every editor — diagnostics and language intelligence from the same source of truth as the interpreter.</p>
+      <p class="card-note"><a href="https://github.com/F1R3FLY-io/rholang-language-server" target="_blank" rel="noopener">rholang-language-server &rarr;</a></p>
+    </article>
+  </div>
+</section>
+
+<section class="section reveal" id="community">
+  <h2 class="section-sub">Join it</h2>
+  <div class="prose">
+    <p>f1r3lang is developed in the open by <a href="https://f1r3fly.io" target="_blank" rel="noopener">F1R3FLY.IO</a>, on foundations proven over a decade of process-calculus research and a shipped mainnet. The work happens on GitHub; the conversation happens on Discord.</p>
+  </div>
+  <ul class="link-list" style="max-width:var(--measure);">
+    <li><a href="https://github.com/F1R3FLY-io" target="_blank" rel="noopener">GitHub — F1R3FLY-io</a> <span class="link-desc">— every repo mentioned on this site</span></li>
+    <li><a href="https://discord.gg/NN59aFdAHM" target="_blank" rel="noopener">Discord</a> <span class="link-desc">— the F1R3FLY community</span></li>
+    <li><a href="https://f1r3fly.io" target="_blank" rel="noopener">f1r3fly.io</a> <span class="link-desc">— the platform f1r3lang powers</span></li>
+  </ul>
+</section>
+
+<section class="section cta-band reveal">
+  <h2 class="section-header">Start writing</h2>
+  <hr class="section-rule">
+  <div class="hero-actions" style="margin-top:0;">
+    <a class="btn btn-primary" href="get-started.html">Get started</a>
+    <a class="btn btn-ghost" href="language.html">Learn the language</a>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <img src="images/f1r3lang-logo-v1.svg" alt="">
+      <span class="footer-note">A <a href="https://f1r3fly.io" target="_blank" rel="noopener">F1R3FLY</a> language</span>
+    </div>
+    <span class="footer-copy">&copy; F1R3FLY INDUSTRIES, 2026. All Rights Reserved</span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

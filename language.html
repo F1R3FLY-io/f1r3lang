@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Language — f1r3lang</title>
+  <meta name="description" content="How f1r3lang works, starting from the query shape you already know: SELECT-FROM-WHERE-DO, explicit writes, witnessed transactions, unforgeable names, and the RSpace execution model.">
+  <meta name="theme-color" content="#0A0A0A">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600;700&family=Source+Sans+3:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap">
+
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- deploy:begin (finalize.py — do not hand-edit) -->
+  <link rel="canonical" href="https://f1r3lang.ai/language.html">
+  <link rel="icon" href="/images/f1r3lang-logo-v1.svg" type="image/svg+xml">
+  <meta property="og:url" content="https://f1r3lang.ai/language.html">
+  <meta property="og:site_name" content="f1r3lang">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="The Language">
+  <meta property="og:description" content="How f1r3lang works, starting from the query shape you already know: SELECT-FROM-WHERE-DO, explicit writes, witnessed transactions, unforgeable names, and the RSpace execution model.">
+  <!-- deploy:end -->
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <img src="images/f1r3lang-logo-v1.svg" alt="f1r3lang">
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">&#9776;</button>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="index.html">Home</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="language.html" aria-current="page">The Language</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="get-started.html">Get Started</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="research.html">Research</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="ecosystem.html">Ecosystem</a></li>
+      <li class="nav-divider" aria-hidden="true">|</li>
+      <li><a href="https://github.com/F1R3FLY-io" target="_blank" rel="noopener">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="main">
+
+<header class="page-head">
+  <p class="eyebrow">The language</p>
+  <h1 class="section-header">You already know the door&nbsp;in</h1>
+  <hr class="section-rule">
+</header>
+
+<!-- ============ THE DOOR ============ -->
+<section class="section reveal" id="door" style="border-top:none; padding-top:2.5rem;">
+  <div class="split" style="margin-top:0;">
+    <div class="prose">
+      <h2 class="section-sub">SELECT, FROM, WHERE — and DO</h2>
+      <p>Every developer has written this query. It has survived five decades in every language that touches data: SQL, LINQ, XQuery, Python and Haskell comprehensions — one shape, everywhere. That persistence is not a syntax fashion. The comprehension is what data access looks like when you say honestly what you are doing: naming a source, filtering it, projecting the survivors.</p>
+      <p>But a query can only <em>ask</em>. It hands its result to someone else — an application, in another language — to act on. LINQ existed precisely to close that gap for reads. f1r3lang goes the rest of the way: the whole language is built around the comprehension, and the comprehension gets a body. <strong>The DO is a process, not a value.</strong> It runs. It can send, spawn further comprehensions, or do nothing — there is no host language to hand results back to, because there is no outside.</p>
+    </div>
+    <div class="code-block" style="margin-top:0;">
+      <div class="code-block-bar"><span>one shape, six dialects</span><span>50 years</span></div>
+      <pre><span class="cm">SQL      SELECT spec FROM prey WHERE chi(spec)</span>
+<span class="cm">LINQ     from spec in prey where Chi(spec) select spec</span>
+<span class="cm">XQuery   for $spec in $prey where chi($spec) return $spec</span>
+<span class="cm">Python   [spec for spec in prey if chi(spec)]</span>
+<span class="cm">Haskell  [ spec | spec &lt;- prey, chi spec ]</span>
+
+<span class="cm">// f1r3lang — the same shape, plus a DO</span>
+<span class="kw">for</span>( @spec &lt;- prey <span class="kw">where</span> Chi(spec) ) {
+  Break!(spec)
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE WRITE ============ -->
+<section class="section reveal" id="write">
+  <div class="split" style="margin-top:0;">
+    <div class="prose">
+      <h2 class="section-sub">Both halves, explicit</h2>
+      <p>A query language has one privileged verb. f1r3lang has two, and the second is why the first behaves differently than it does in SQL. The write is a term. It composes in parallel with everything else using <code class="inline">|</code>, and it is addressed the same way the read is: the reader names <code class="inline">prey</code>, the writer names <code class="inline">prey</code>, neither names the other.</p>
+      <p>In SQL, INSERT and SELECT are different kinds of statement, mediated by an engine that owns the table. Here they are two terms in one program — and the table is not owned by anybody.</p>
+    </div>
+    <div class="code-block" style="margin-top:0;">
+      <div class="code-block-bar"><span>the-write.rho</span><span>f1r3lang</span></div>
+      <pre><span class="cm">// the write — a term like any other</span>
+prey!( spec )
+
+<span class="cm">// reader and writer, composed in parallel</span>
+prey!( spec ) |
+<span class="kw">for</span>( @s &lt;- prey <span class="kw">where</span> Chi(s) ) { Break!(s) }</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRANSLATION TABLE ============ -->
+<section class="section reveal" id="translation">
+  <p class="eyebrow">For readers coming from SQL</p>
+  <h2 class="section-header">The translation table</h2>
+  <hr class="section-rule">
+  <div class="prose">
+    <p>f1r3lang distinguishes three ways of reading, and the distinction is exactly the one a database developer already makes between a destructive read, a standing query, and a plain look. Choosing among the three arrows is the main design decision in a f1r3lang program.</p>
+  </div>
+  <div class="compare-wrap">
+  <table class="compare">
+    <thead><tr><th scope="col">f1r3lang</th><th scope="col">SQL reading</th></tr></thead>
+    <tbody>
+      <tr><td><code>x!(Q)</code></td><td>INSERT — put a row on <code>x</code></td></tr>
+      <tr><td><code>for( p &lt;- x )P</code></td><td>SELECT &hellip; FOR UPDATE, then DELETE, then act. Consumed by exactly one reader.</td></tr>
+      <tr><td><code>for( p &lt;= x )P</code></td><td>A standing query, or a trigger: the reader persists and fires again on the next matching write.</td></tr>
+      <tr><td><code>for( p &lt;&lt;- x )P</code></td><td>A peek: plain SELECT. Reads without consuming, so the datum remains for others.</td></tr>
+      <tr><td><code>where cond</code></td><td>WHERE</td></tr>
+      <tr><td><code>&amp;</code></td><td>A join — and simultaneously a distributed atomic commit across the joined channels.</td></tr>
+      <tr><td><code>;</code></td><td>Sequence: this group of receipts, then that one.</td></tr>
+      <tr><td>the pattern</td><td>The projection — structural rather than columnar, matched up to the equations of the theory that types the channel.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="prose" style="margin-top:2rem;">
+    <p>One of those rows deserves a second look. A SQL join is over static extents: the rows are already there. A f1r3lang join is over <strong>concurrent writers</strong> — the rows are being produced by other running programs, and the join is a rendezvous. It succeeds when a matching datum is available on every joined channel at once, and until then it waits. The protocol machinery that would normally implement this — prepare, vote, commit, coordinator, timeout — is not written, because the rule that fires is the multi-channel one.</p>
+  </div>
+</section>
+
+<!-- ============ THE WITNESS ============ -->
+<section class="section reveal" id="witness">
+  <div class="split" style="margin-top:0;">
+    <div class="prose">
+      <h2 class="section-sub">Transactions leave receipts</h2>
+      <p>When a reader and a writer meet on a channel, one rule fires, and the substitution it performs is the <em>witness</em> that the meeting occurred. After the step, the running term contains the evidence: the datum is sitting in the continuation, in the position the pattern named. Nothing external recorded the event. The event left a mark on the program.</p>
+      <p>A communication is atomic, and its atomicity requires no support from the runtime. The condition is evaluated before the step commits; if it fails, nothing is consumed, so there is no partial state and nothing to compensate. A failed transaction is not rolled back — <strong>it never began.</strong> The message stays in the tuple space, exactly as a non-matching pattern would leave it.</p>
+      <p>Because there is an identified event, there is something to charge for: the unit of billing is the unit of commitment. That is what makes metering honest.</p>
+    </div>
+    <div class="code-block" style="margin-top:0;">
+      <div class="code-block-bar"><span>guarded-receive.rho</span><span>f1r3lang</span></div>
+      <pre><span class="cm">// only commit when the pattern matches</span>
+<span class="cm">// AND the guard is true. a failing guard</span>
+<span class="cm">// leaves the message in the tuple space.</span>
+<span class="kw">new</span> chan, stdout(<span class="str">`rho:io:stdout`</span>) <span class="kw">in</span> {
+  chan!(-3) |
+  chan!(0)  |
+  chan!(7)  |
+  <span class="kw">for</span> (@x &lt;- chan <span class="kw">where</span> x &gt; 0) {
+    stdout!((<span class="str">"kept"</span>, x))
+  }
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CORE MODEL ============ -->
+<section class="section reveal" id="model">
+  <div class="split" style="margin-top:0;">
+    <div class="prose">
+      <h2 class="section-sub">Processes and names</h2>
+      <p>Underneath the comprehension there are no variables, no objects, no shared memory. A f1r3lang program is made of exactly two kinds of values: <strong>processes</strong> — everything that computes, including literals like <code class="inline">42</code> — and <strong>names</strong> — the channels processes communicate on.</p>
+      <p>The two convert into each other: <code class="inline">@P</code> quotes a process into a name; <code class="inline">*x</code> dereferences a name back into a process. That reflection is the "rho" in rho&#8209;calculus — reflective higher order — and it is what lets the language treat code as data without leaving the formal model.</p>
+      <p>Concurrency is not a feature bolted on: the <code class="inline">|</code> operator is how programs are built, channels hold messages as a bag rather than a queue, and sends never block. Sequence is what you construct deliberately, when you actually need it.</p>
+    </div>
+    <div class="code-block" style="margin-top:0;">
+      <div class="code-block-bar"><span>send-receive.rho</span><span>f1r3lang</span></div>
+      <pre><span class="kw">new</span> chan <span class="kw">in</span> {
+  chan!(42) |              <span class="cm">// send 42 on chan</span>
+  <span class="kw">for</span> (@value &lt;- chan) {   <span class="cm">// receive it</span>
+    stdout!(value)         <span class="cm">// value is 42</span>
+  }
+}
+
+<span class="cm">// sequence, when you mean it:</span>
+<span class="kw">new</span> ack <span class="kw">in</span> {
+  chan!(<span class="str">"first"</span>, *ack) |
+  <span class="kw">for</span> (_ &lt;- ack) { chan!(<span class="str">"second"</span>) }
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECURITY ============ -->
+<section class="section reveal" id="security">
+  <div class="split" style="margin-top:0;">
+    <div class="prose">
+      <h2 class="section-sub">Unforgeable names</h2>
+      <p>Names created with <code class="inline">new</code> are cryptographically unique. No process outside the block that created one can guess it, reconstruct it, or convert bits back into it — the language has no construct for forging a name, even when its bits are visible on chain.</p>
+      <p>That's capability-based security as grammar. Access to a channel <em>is</em> the permission to use it. The contract-draining bugs of shared-state languages — reentrancy, confused-deputy calls — depend on reaching state you shouldn't; here that state is a name you were never given.</p>
+    </div>
+    <div class="code-block" style="margin-top:0;">
+      <div class="code-block-bar"><span>private.rho</span><span>f1r3lang</span></div>
+      <pre><span class="kw">new</span> privateChan <span class="kw">in</span> {
+  <span class="cm">// only this block holds privateChan</span>
+  privateChan!(<span class="str">"secret"</span>) |
+  <span class="kw">for</span> (@msg &lt;- privateChan) {
+    stdout!(msg)
+  }
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EXECUTION ============ -->
+<section class="section reveal" id="execution">
+  <p class="eyebrow">Under the hood</p>
+  <h2 class="section-header">The execution model</h2>
+  <hr class="section-rule">
+  <div class="prose">
+    <p>Programs run on <strong>RSpace</strong>, a pattern-matching tuple space that replaces the key-value store. Execution is reduction: the runtime matches sends against receives, concurrently, without locks. Every operation is metered in <strong>phlogiston</strong> — deploys carry a limit, unused gas is refunded. Non-deterministic scheduling, deterministic outcomes: whatever order reductions happen in, every validator converges on the same state, finalized mathematically by CBC Casper consensus.</p>
+    <p>On the research branch, metering goes a step further: cost lowers to sends and receipts <em>in the language itself</em>. Spending fuel is a communication, a budget is a stack of tokens, and running out of budget is a non-event rather than an error path — an unfunded operation simply never happens, which is exactly the same guarantee a failed guard gives. <a href="research.html">More in Research.</a></p>
+  </div>
+</section>
+
+<!-- ============ WHAT'S NEW ============ -->
+<section class="section reveal" id="new">
+  <p class="eyebrow">Beyond Rholang</p>
+  <h2 class="section-header">What f1r3lang adds</h2>
+  <hr class="section-rule">
+  <div class="card-grid">
+    <article class="card">
+      <h3>Real numeric types</h3>
+      <p>BigInt, rationals, fixed-point, and floats — typed numeric literals across widths, not just 64-bit integers. Financial math without the workarounds.</p>
+    </article>
+    <article class="card">
+      <h3>PathMaps &amp; zippers</h3>
+      <p>Hierarchical trie structures with literal syntax and cursor-based navigation. Filesystem-shaped data as a first-class value.</p>
+    </article>
+    <article class="card">
+      <h3>RhoSpec</h3>
+      <p>A native test framework for contracts, used by the platform's own system contracts. Test on-chain logic like you test everything else.</p>
+    </article>
+    <article class="card">
+      <h3>Rhox templates</h3>
+      <p><code class="inline">.rhox</code> macro files parameterize contracts at deploy time — one source, many configurations. The Proof-of-Stake contract itself ships this way.</p>
+    </article>
+    <article class="card">
+      <h3>AI channels</h3>
+      <p><code class="inline">rho:ai:*</code> and <code class="inline">rho:ollama:*</code> — hosted and local models as system channels, with deterministic replay for consensus.</p>
+    </article>
+    <article class="card">
+      <h3>A pure-Rust engine</h3>
+      <p>The node and interpreter were rebuilt in Rust — no JVM. Faster, leaner, and the recommended production implementation.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="section cta-band reveal">
+  <h2 class="section-header">See it run</h2>
+  <hr class="section-rule">
+  <div class="hero-actions" style="margin-top:0;">
+    <a class="btn btn-primary" href="get-started.html">Get started</a>
+    <a class="btn btn-ghost" href="research.html">Where it's going &rarr;</a>
+    <a class="btn btn-ghost" href="https://github.com/F1R3FLY-io/f1r3fly/tree/main/docs/rholang" target="_blank" rel="noopener">Full language reference &rarr;</a>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <img src="images/f1r3lang-logo-v1.svg" alt="">
+      <span class="footer-note">A <a href="https://f1r3fly.io" target="_blank" rel="noopener">F1R3FLY</a> language</span>
+    </div>
+    <span class="footer-copy">&copy; F1R3FLY INDUSTRIES, 2026. All Rights Reserved</span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
